@@ -2,3 +2,14 @@
 
 必要となる CPAN モジュール
 - Encode::Locale
+- Class::Data::Inheritable (DBIx::MoCo で使用)
+- UNIVERSAL::require (DBIx::MoCo で使用)
+- List::MoreUtils (DBIx::MoCo で使用)
+- Class::Singleton (DBIx::MoCo で使用)
+- Class::Trigger (DBIx::MoCo で使用)
+- SQL::Abstract (DBIx::MoCo で使用)
+- Log::Dispatch::Screen (DBIx::MoCo で使用)
+
+--- setup ---
+    mysql -u root -e 'CREATE DATABASE diary'
+    mysql -u root diary < db/schema.sql
