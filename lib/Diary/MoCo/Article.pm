@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-package Diary::MoCo::Entry;
+package Diary::MoCo::Article;
 use base 'Diary::MoCo';
 
 __PACKAGE__->table( 'entry' );
