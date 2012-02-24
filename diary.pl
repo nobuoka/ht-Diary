@@ -5,6 +5,7 @@ use warnings;
 
 use File::Temp; # 日記の内容を編集する際の一時ファイル
 use Fcntl qw( :flock ); # ファイルロックの定数
+use Pod::Usage;
 
 # パスの追加
 use FindBin;
@@ -15,10 +16,11 @@ use Diary::MoCo::User;
 # ソースコード中の文字列および標準入出力, コマンドライン引数のエンコーディング
 use Encode::Locale;
 use encoding "UTF-8", STDOUT => "console_out", STDIN => "console_in";
+binmode STDERR, ":encoding(console_out)";
 Encode::Locale::decode_argv();
 
 # DB の設定ファイルの位置
-my $dbconfpath = "$FindBin::Bin/conf/db.conf";
+my $dbconfpath = "$FindBin::Bin/conf/db_for_production.conf";
 
 # 処理内容
 my %HANDLERS = (
@@ -32,33 +34,26 @@ my %HANDLERS = (
 
 
 # Database に関する設定を読み込み
+if ( !-f $dbconfpath ) {
+    print STDERR '接続先 DB の設定ファイルが存在しません. ' . "\n"
+                    . 'はじめに initdb.pl を使用して接続先 DB の設定を行ってください.' . "\n";
+    exit -1;
+}
 Diary::Database->load_db_config( $dbconfpath );
 
 # コマンドライン引数
 #my $command = shift @ARGV;
 #print length $command, "\n";
-my $command = shift @ARGV || '--help';
+if ( @ARGV == 0 ) {
+    show_help( 1 );
+}
+my $command = shift @ARGV;
 
-my $handler = $HANDLERS{ $command };
-    #or pod2usage;
-
-# ユーザーオブジェクトの取得 (必要ならばデータベースに登録)
-#my $user = Diary::MoCo::User->find( name => $ENV{USER} );
-#|| Diary::MoCo::User->create( name => $ENV{USER} );
+my $handler = $HANDLERS{ $command }
+    or show_help( 1 );
 
 # 処理の実行
 $handler->( @ARGV );
-
-#Diary::Database->execute( 'TRUNCATE TABLE user' );
-#my $user1 = Diary::MoCo::User->create( name => 'test_user' );
-#my $user2 = Diary::MoCo::User->create( name => '日本語ユーザー名' );
-
-#my $users = Diary::MoCo::User->search();
-#$users->each( sub {
-#  print $_->name, "\n";
-#} );
-
-#print '__end__', "\n";
 
 exit 0;
 
@@ -123,6 +118,9 @@ sub list_diary {
 # 日記エントリーの新規追加
 #
 sub add_diary {
+    if( @_ != 1 ) {
+        die 'add command requires 1 argument (article_title)';
+    }
     my ( $article_title ) = @_;
 
     my $user = get_user();
@@ -130,13 +128,16 @@ sub add_diary {
 
     my $article_body = let_user_input_text( $user->editor_cmd, '' );
     my $article = $user->create_article( $article_title, $article_body );
-    print 'wrote new article (id: ', $article->id, ') : ', $article->title, "\n";
+    print '[SUCCESS] wrote new article (id: ', $article->id, ') : ', $article->title, "\n";
 }
 
 ###
 # 既存日記エントリーの編集
 #
 sub edit_diary {
+    if ( @_ < 1 ) {
+        die 'edit command requires 1 argument (article_id)';
+    }
     my ( $article_id, $article_title ) = @_;
 
     my $user = get_user();
@@ -147,7 +148,7 @@ sub edit_diary {
     my $new_article_body = let_user_input_text( $user->editor_cmd, $article->body );
     # TODO: title の変更
     $article->edit( $article_title, $new_article_body );
-    print 'edited article (id: ', $article->id, ') : ', $article->title, "\n";
+    print '[SUCCESS] edited article (id: ', $article->id, ') : ', $article->title, "\n";
 }
 
 ###
@@ -161,7 +162,7 @@ sub delete_diary {
 
     $user->delete_article_by_id( $article_id )
         or die "failed to delete article (id=$article_id)";
-    print 'deleted ', "\n";
+    print '[SUCCESS] deleted ', "\n";
 }
 
 ###
@@ -192,4 +193,39 @@ sub conf_user {
             encoding   => $encoding,
         );
     }
+    print '[SUCCESS]', "\n";
 }
+
+sub show_help {
+    my ( $return_code ) = @_;
+    pod2usage( $return_code );
+}
+
+__END__
+
+=head1 NAME
+
+dialy.pl
+
+=head1 SYNOPSIS
+
+dialy.pl cmd [options]
+dialy.pl --help
+
+cmd:
+  add
+  edit
+  delete
+  list
+
+=head1 COMMANDS
+
+=over 8
+
+=item B<add>
+
+add new dialy.
+
+=back
+
+=cut

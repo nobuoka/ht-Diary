@@ -46,6 +46,11 @@ sub file_path {
     return $self->{'file_path'};
 }
 
+sub file_exist {
+    my $self = shift;
+    return -f $self->{'file_path'};
+}
+
 sub dsn {
     my $self = shift;
     return $self->{'dsn'};
