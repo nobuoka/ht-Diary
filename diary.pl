@@ -22,39 +22,43 @@ my $dbconfpath = "$FindBin::Bin/conf/db.conf";
 
 # 処理内容
 my %HANDLERS = (
-    add    => \&add_diary,
-    list   => \&list_diary,
-    edit   => \&edit_diary,
-    delete => \&delete_diary,
+    add      => \&add_diary,
+    list     => \&list_diary,
+    edit     => \&edit_diary,
+    delete   => \&delete_diary,
+    userconf => \&conf_user,
+    '--help' => \&show_help,
 );
 
 
-
+# Database に関する設定を読み込み
 Diary::Database->load_db_config( $dbconfpath );
 
 # コマンドライン引数
 #my $command = shift @ARGV;
 #print length $command, "\n";
-my $command = shift @ARGV || 'list';
+my $command = shift @ARGV || '--help';
 
 my $handler = $HANDLERS{ $command };
     #or pod2usage;
 
-my $user = 
-    Diary::MoCo::User->find( name => $ENV{USER} ) 
-    || Diary::MoCo::User->create( name => $ENV{USER} );
-$handler->( $user, @ARGV );
+# ユーザーオブジェクトの取得 (必要ならばデータベースに登録)
+#my $user = Diary::MoCo::User->find( name => $ENV{USER} );
+#|| Diary::MoCo::User->create( name => $ENV{USER} );
 
-Diary::Database->execute( 'TRUNCATE TABLE user' );
-my $user1 = Diary::MoCo::User->create( name => 'test_user' );
-my $user2 = Diary::MoCo::User->create( name => '日本語ユーザー名' );
+# 処理の実行
+$handler->( @ARGV );
 
-my $users = Diary::MoCo::User->search();
-$users->each( sub {
-  print $_->name, "\n";
-} );
+#Diary::Database->execute( 'TRUNCATE TABLE user' );
+#my $user1 = Diary::MoCo::User->create( name => 'test_user' );
+#my $user2 = Diary::MoCo::User->create( name => '日本語ユーザー名' );
 
-print '__end__', "\n";
+#my $users = Diary::MoCo::User->search();
+#$users->each( sub {
+#  print $_->name, "\n";
+#} );
+
+#print '__end__', "\n";
 
 exit 0;
 
@@ -71,29 +75,42 @@ sub let_user_input_text {
 
     # ファイルに書き込み
     flock $fh_dialy_body, LOCK_EX;
-    print $fh_dialy_body $old_text, "\n";
+    print $fh_dialy_body $old_text;
     flock $fh_dialy_body, LOCK_UN;
 
     # テキストエディタを開いてユーザーに編集させる
     system( $editor_cmd, $fh_dialy_body->filename ) == 0
-        or die 'fail...';
+        or die "failed to execute $editor_cmd";
 
     # 編集後の内容を得る
     flock $fh_dialy_body, LOCK_SH;
     $fh_dialy_body->seek( 0, SEEK_SET );
-    my @new_text_lines = <$fh_dialy_body>;
+    my $new_text = do { local $/; <$fh_dialy_body> };
     flock $fh_dialy_body, LOCK_UN;
     $fh_dialy_body->close();
 
-    return join( '', @new_text_lines );
+    return $new_text; 
+}
+
+
+###
+# ユーザーオブジェクトを取得
+# 
+sub get_user {
+    #my $uid = $>;
+    my $user_name = $ENV{'USER'};
+    my $user = Diary::MoCo::User->find( name => $user_name )
+        or die "can't find you on database. please do userconf command at first.";
+    return $user;
 }
 
 ###
 # 日記エントリー一覧の表示
 #
 sub list_diary {
-    my ( $user ) = @_;
+    #my () = @_;
 
+    my $user = get_user();
     printf " *** %s's articles ***\n", $user->name;
 
     my $articles = $user->articles;
@@ -106,15 +123,13 @@ sub list_diary {
 # 日記エントリーの新規追加
 #
 sub add_diary {
-    my ( $user, $article_title, $editor_cmd ) = @_;
+    my ( $article_title ) = @_;
 
+    my $user = get_user();
     #die 'url required' if not defined $url;
 
-    my $article_body = let_user_input_text( $editor_cmd, '' );
-    my $article = $user->add_article(
-        title => $article_title,
-        body  => $article_body,
-    );
+    my $article_body = let_user_input_text( $user->editor_cmd, '' );
+    my $article = $user->create_article( $article_title, $article_body );
     print 'wrote new article (id: ', $article->id, ') : ', $article->title, "\n";
 }
 
@@ -122,15 +137,16 @@ sub add_diary {
 # 既存日記エントリーの編集
 #
 sub edit_diary {
-    my ( $user, $article_id, $editor_cmd, $article_title ) = @_;
+    my ( $article_id, $article_title ) = @_;
 
+    my $user = get_user();
     #die 'url required' if not defined $url;
-    my $article = Diary::MoCo::Article->find( id => $article_id )
+    my $article = $user->select_article_by_id( $article_id )
         or die "article id=$article_id not found";
 
-    my $new_article_body = let_user_input_text( $editor_cmd, $article->body );
+    my $new_article_body = let_user_input_text( $user->editor_cmd, $article->body );
     # TODO: title の変更
-    $article->update_body( $new_article_body );
+    $article->edit( $article_title, $new_article_body );
     print 'edited article (id: ', $article->id, ') : ', $article->title, "\n";
 }
 
@@ -138,14 +154,42 @@ sub edit_diary {
 # 既存日記エントリーの削除
 #
 sub delete_diary {
-    my ( $user, $article_id ) = @_;
+    my ( $article_id ) = @_;
+    #die 'delete command requires 1 argument (article_id)' if not defined $article_id;
 
-    die 'article_id required' if not defined $article_id;
+    my $user = get_user();
 
-    Diary::MoCo::User->delete_article_by_id( $article_id )
-        or die "article id=$article_id not found";
-    #my $bookmark = $user->delete_bookmark($entry);
-    #if ($bookmark) {
-    #    print 'deleted ', $bookmark->as_string, "\n";
-    #}
+    $user->delete_article_by_id( $article_id )
+        or die "failed to delete article (id=$article_id)";
+    print 'deleted ', "\n";
+}
+
+###
+# ユーザーを登録
+#
+sub conf_user {
+    if( @_ != 2 ) {
+        die 'userconf command requires 2 arguments (editor_cmd, encoding)';
+    }
+    my ( $editor_cmd, $encoding ) = @_;
+
+    #my $uid = $>; # 実効 UID
+    my $user_name = $ENV{'USER'};
+    my $user = Diary::MoCo::User->find( name => $user_name );
+    # 既に DB に存在する場合
+    if ( $user ) {
+        $user->update(
+            name       => $user_name,
+            editor_cmd => $editor_cmd,
+            encoding   => $encoding,
+        );
+    }
+    # DB に存在しない場合
+    else {
+        Diary::MoCo::User->create(
+            name       => $user_name,
+            editor_cmd => $editor_cmd,
+            encoding   => $encoding,
+        );
+    }
 }

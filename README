@@ -2,6 +2,10 @@
 
 必要となる CPAN モジュール
 - Encode::Locale
+- DateTime
+- DateTime::Format::MySQL
+- Exporter::Lite
+- IO::Prompt
 - Class::Data::Inheritable (DBIx::MoCo で使用)
 - UNIVERSAL::require (DBIx::MoCo で使用)
 - List::MoreUtils (DBIx::MoCo で使用)
@@ -11,5 +15,5 @@
 - Log::Dispatch::Screen (DBIx::MoCo で使用)
 
 --- setup ---
-    mysql -u root -e 'CREATE DATABASE diary'
+    mysql -u root -e 'CREATE DATABASE diary DEFAULT CHARACTER SET utf8'
     mysql -u root diary < db/schema.sql

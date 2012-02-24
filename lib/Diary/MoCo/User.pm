@@ -17,4 +17,36 @@ sub articles {
     );
 }
 
+sub create_article {
+    my $self = shift;
+    my ( $article_title, $article_body ) = @_;
+
+    my $article = Diary::MoCo::Article->create(
+        user_id => $self->id,
+        title   => $article_title,
+        body    => $article_body,
+    );
+}
+
+sub delete_article_by_id {
+    my $self = shift;
+    my ( $article_id ) = @_;
+
+    my $article = $self->select_article_by_id( $article_id )
+        or return;
+    $article->delete();
+    return 1;
+}
+
+sub select_article_by_id {
+    my $self = shift;
+    my ( $article_id ) = @_;
+
+    my $article = Diary::MoCo::Article->find(
+        id => $article_id,
+        user_id => $self->id,
+    );
+    return $article;
+}
+
 1;

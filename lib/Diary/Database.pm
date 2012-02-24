@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use IO::File;
+use Diary::DBConf;
 
 package Diary::Database;
 use base 'DBIx::MoCo::DataBase';
@@ -13,20 +14,12 @@ use base 'DBIx::MoCo::DataBase';
 sub load_db_config {
     my $pkg = shift;
     my $dbconfpath = shift;
-    #print $dbconfpath, "\n";
-    my $dbconffile = IO::File->new( $dbconfpath, '<' );
-    my @lines = $dbconffile->getlines();
-    chomp( @lines );
-    # 設定ファイルのコメント行を取り除く
-    @lines = grep( !/^#/, @lines );
-    # TODO : 行数確認とか
-    #foreach( @lines ) {
-    #    print "::", $_, "\n";
-    #}
-    $pkg->dsn( $lines[0] );
-    $pkg->username( $lines[1] );
-    $pkg->password( $lines[2] );
-    $dbconffile->close();
+
+    my $dbconf = Diary::DBConf->new( $dbconfpath );
+    $pkg->dsn( $dbconf->dsn );
+    $pkg->username( $dbconf->username );
+    $pkg->password( $dbconf->password );
+    return 1;
 }
 
 1;
