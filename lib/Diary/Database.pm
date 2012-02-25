@@ -2,6 +2,8 @@ use strict;
 use warnings;
 
 use IO::File;
+
+use DBIx::MoCo::DataBase;
 use Diary::DBConf;
 
 package Diary::Database;

@@ -45,12 +45,12 @@ Diary::Database->load_db_config( $dbconfpath );
 #my $command = shift @ARGV;
 #print length $command, "\n";
 if ( @ARGV == 0 ) {
-    show_help( 1 );
+    pod2usage({ -exitval => 1, -msg => 'コマンドを指定してください' });
 }
 my $command = shift @ARGV;
 
 my $handler = $HANDLERS{ $command }
-    or show_help( 1 );
+    or pod2usage({ -exitval => 1, -msg => "コマンド $command は理解できません" });
 
 # 処理の実行
 $handler->( @ARGV );
@@ -197,8 +197,7 @@ sub conf_user {
 }
 
 sub show_help {
-    my ( $return_code ) = @_;
-    pod2usage( $return_code );
+    pod2usage( 0 );
 }
 
 __END__
@@ -209,14 +208,12 @@ dialy.pl
 
 =head1 SYNOPSIS
 
-dialy.pl cmd [options]
-dialy.pl --help
-
-cmd:
-  add
-  edit
-  delete
-  list
+  dialy.pl add      article_titile
+  dialy.pl edit     article_id [ new_article_title ]
+  dialy.pl list
+  dialy.pl delete   article_id
+  dialy.pl userconf editor_cmd encoding
+  dialy.pl --help
 
 =head1 COMMANDS
 
@@ -224,7 +221,38 @@ cmd:
 
 =item B<add>
 
-add new dialy.
+新しい日記記事を作成します. 
+add の引数として日記のタイトルを与える必要があります.
+このコマンドが実行されると userconf 
+コマンドで指定したテキストエディタが起動されますので, 
+そこに日記の本文を記述してください. 
+
+日記記事の作成後, 作成した日記記事の id が表示されます. 
+
+=item B<edit>
+
+指定した id の日記記事を編集します. 
+タイトルを変更する場合は, 日記記事の id 
+に続けて新しい記事のタイトルを記述してください. 
+このコマンドが実行されると userconf 
+コマンドで指定したテキストエディタが起動されますので, 
+そこで日記の本文を修正してください. 
+
+=item B<list>
+
+あなたが書いた日記記事の一覧を表示します. 
+日記記事は, そのタイトルと id のみが表示されます. 
+
+=item B<delete>
+
+指定した id の日記記事を削除します.
+
+=item B<userconf>
+
+add コマンドや edit コマンドが実行された際に起動されるテキストエディタと, 
+そのテキストエディタで編集するファイルのエンコーディングを指定します. 
+また, ユーザー登録がされていない場合は, このコマンドによってユーザー登録を
+行いますので, 最初にこのコマンドを実行してください. 
 
 =back
 
