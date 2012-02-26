@@ -21,7 +21,7 @@ sub startup : Test(startup => 1) {
     t::Diary->truncate_db;
 }
 
-sub add_article : Test(5) {
+sub add_article : Test(6) {
     # ユーザー作成
     ok 
         my $user = Diary::MoCo::User->create( 
@@ -42,12 +42,9 @@ sub add_article : Test(5) {
     is $article->body,  $body;
 
 
-=begin
     is_deeply
-        $user->bookmarks->map(sub { $_->entry->url })->to_a,
-        [ 'http://www.example.com/' ],
-        '$user->bookmarks';
-=cut
+        $user->articles->map( sub { $_->title } )->to_a,
+        [ $title ];
 }
 
 __PACKAGE__->runtests;
