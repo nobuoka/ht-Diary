@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use utf8;
 
 package Diary::MoCo::Article;
 use base 'Diary::MoCo';
@@ -17,13 +18,15 @@ sub user {
 
 sub edit {
     my $self = shift;
-
     my ( $title, $body ) = @_;
-    my $vals = { body => $body };
+
+    DBIx::MoCo->start_session;
+    $self->body( $body ); # この時点で before_update トリガ
     if ( defined $title ) {
-        %{$vals} = { title => $title };
+        $self->title( $title ); # この時点で before_update トリガ
     }
-    $self->update( %{$vals} );
+    $self->save();
+    DBIx::MoCo->end_session;
 }
 
 1;

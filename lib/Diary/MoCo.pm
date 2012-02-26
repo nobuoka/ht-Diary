@@ -35,12 +35,17 @@ __PACKAGE__->add_trigger(
                 $args->{$col} = $class->now.q();
             }
         }
-    },
+    }
 );
 
 __PACKAGE__->add_trigger(
     before_update => sub {
         my ($class, $self, $args) = @_;
+        # for debug
+        #print '[DEBUG] before_update', "\n";
+        #foreach my $arg ( keys %{$args} ) {
+        #    print '     key: ', $arg, "\n";
+        #}
         foreach my $col (qw(updated_on)) {
             if ($class->has_column($col) && !defined $args->{$col}) {
                 $args->{$col} = $class->now.q();
