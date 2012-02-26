@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 diary.pl -- コマンドラインインターフェースで日記を書けるツール
