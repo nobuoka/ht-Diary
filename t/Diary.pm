@@ -7,7 +7,7 @@ use Diary::Database;
 
 
 # DB の設定ファイルの位置
-my $dbconfpath = "conf/db_for_test.conf";
+my $dbconfpath = "config/db_for_test.conf";
 
 # Database に関する設定を読み込み
 if ( !-f $dbconfpath ) {

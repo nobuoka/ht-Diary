@@ -20,7 +20,7 @@ binmode STDERR, ":encoding(console_out)";
 Encode::Locale::decode_argv();
 
 # DB の設定ファイルの位置
-my $dbconfpath = "$FindBin::Bin/conf/db_for_production.conf";
+my $dbconfpath = "$FindBin::Bin/config/db_for_production.conf";
 
 # 処理内容
 my %HANDLERS = (
