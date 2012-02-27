@@ -87,3 +87,19 @@ diary という DB 名で DB の初期化を行う例を以下に示します.
   File::Slurp
   CLASS
   Template
+  Plack::Runner
+  HTTP::Server::Simple::PSGI
+  Cache::MemoryCache
+  Class::Component
+  YAML::Syck
+  Log::Dispatch::Configurator::YAML
+  Template::Stash::ForceUTF8
+  Exception::Class
+  Encode::JavaScript::UCS
+  FormValidator::Simple
+  Class::Accessor::Lvalue::Fast
+  HTTP::MobileAgent
+  HTTP::BrowserDetect
+  Parse::RecDescent
+  Plack::Middleware::Debug
+  Plack::Middleware::ReverseProxy
