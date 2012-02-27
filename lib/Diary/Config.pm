@@ -1,4 +1,4 @@
-package .::Config;
+package Diary::Config;
 use strict;
 use warnings;
 use base qw/Ridge::Config/;
@@ -8,7 +8,7 @@ my $root = file(__FILE__)->dir->parent->parent->parent;
 
 __PACKAGE__->setup({
     root          => __PACKAGE__->find_root,
-    namespace     => '.',
+    namespace     => 'Diary',
     charset       => 'utf-8',
     ignore_config => 1,
     static_path   => [

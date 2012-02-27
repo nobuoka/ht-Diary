@@ -10,7 +10,7 @@ use Path::Class;
 use Plack::Builder;
 use Cache::MemoryCache;
 
-my $namespace = '.';
+my $namespace = 'Diary';
 $namespace->use or die $@;
 
 my $root = file(__FILE__)->parent->parent;

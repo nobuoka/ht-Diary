@@ -1,7 +1,7 @@
-package .::Engine::Index;
+package Diary::Engine::Index;
 use strict;
 use warnings;
-use .::Engine -Base;
+use Diary::Engine -Base;
 
 sub default : Public {
     my ($self, $r) = @_;

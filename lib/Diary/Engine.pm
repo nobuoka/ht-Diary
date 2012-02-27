@@ -1,4 +1,4 @@
-package .::Engine;
+package Diary::Engine;
 use strict;
 use warnings;
 use Ridge::Engine -Base;

@@ -13,7 +13,7 @@ GetOptions('h|help|?' => \$help);
 pod2usage(1) if ($help || !$ARGV[0]);
 
 Ridge::Helper->new({
-    namespace => '.',
+    namespace => 'Diary',
     root      => dir($FindBin::Bin)->parent,
     argv      => [ @ARGV ],
 })->run;
