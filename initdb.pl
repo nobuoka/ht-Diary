@@ -21,8 +21,8 @@ use encoding "UTF-8", STDOUT => "console_out", STDIN => "console_in";
 Encode::Locale::decode_argv();
 
 # DB の設定ファイルの位置
-my $dbconfpath_for_prod = "$FindBin::Bin/conf/db_for_production.conf";
-my $dbconfpath_for_test = "$FindBin::Bin/conf/db_for_test.conf";
+my $dbconfpath_for_prod = "$FindBin::Bin/config/db_for_production.conf";
+my $dbconfpath_for_test = "$FindBin::Bin/config/db_for_test.conf";
 
 print "this process initialize mysql database for diary.\n";
 my $target_env = prompt 'which envionment do you want to initialize? ', "\n"

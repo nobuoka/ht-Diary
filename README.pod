@@ -17,9 +17,9 @@ dialy.pl を web アプリケーションにするプロジェクト.
 
 =over 2
 
-=item 本番用: conf/db_for_production.conf
+=item 本番用: config/db_for_production.conf
 
-=item テスト用: conf/db_for_test.conf
+=item テスト用: config/db_for_test.conf
 
 =back
 
@@ -38,7 +38,7 @@ diary という DB 名で DB の初期化を行う例を以下に示します.
   $ mysql -u root diary < db/schema.sql
 
 その後, 本アプリケーションの接続先 DB の設定ファイル 
-(本番用は conf/db_for_production.conf, テスト用は conf/db_for_test.conf)
+(本番用は config/db_for_production.conf, テスト用は config/db_for_test.conf)
 を記述します. 
 以下に例を示します. 
 
@@ -62,7 +62,7 @@ diary という DB 名で DB の初期化を行う例を以下に示します.
 
 ここで, 入力した名前の DB が既に存在する場合, 元々存在した DB は確認なしで
 消去されますのでご注意ください. 
-また, conf/db_for_production.conf ファイルや conf/db_for_test.conf ファイルも
+また, config/db_for_production.conf ファイルや config/db_for_test.conf ファイルも
 確認なしで上書きされます. 
 
 =head1 DEPENDENCIES
