@@ -2,7 +2,7 @@
 <html lang="ja">
   <head>
     <meta charset="UTF-8">
-    <title>Diary - index</title>
+    <title>Diary - Article</title>
   </head>
   <body>
     <div>
@@ -11,6 +11,9 @@
         <h1>[% article.title | html %]</h1>
         <div><pre>[% article.body | html %]</pre></div>
       </article>
+      <form action="/article.delete?id=[% article.id | url %]" method="POST">
+        <div><input type="submit" value="記事を削除する"></div>
+      </form>
     </div>
   </body>
 </html>

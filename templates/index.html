@@ -2,32 +2,14 @@
 <html lang="ja">
   <head>
     <meta charset="UTF-8">
-    <title>Diary - index</title>
+    <title>Diary</title>
   </head>
   <body>
     <div>
-      <h1>Diary - index</h1>
-      <h2>[% user.name %] さんの日記記事一覧</h2>
-      [% IF articles_on_page.length() != 0 %]
+      <h1>Diary</h1>
       <ul>
-        [% FOREACH article IN articles_on_page %]
-        <li><a href="/article?id=[% article.id | html %]">[% article.title | html %]</a></li>
-        [% END %]
+        <li><a href="/articles">記事一覧</a></li>
       </ul>
-      [% ELSE %]
-      <p>記事はありません</p>
-      [% END %]
-
-      <!-- TODO: test -->
-      [% IF num_pages %]
-      <div class="pager">
-        [% p = 1 %]
-        [% WHILE p <= num_pages %]
-        <a href="/?page=[% p | html %]">[% p | html %]</a>
-        [%   p = p + 1 %]
-        [% END %]
-      </div>
-      [% END %]
     </div>
   </body>
 </html>
