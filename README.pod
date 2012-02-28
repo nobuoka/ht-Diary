@@ -74,6 +74,8 @@ diary という DB 名で DB の初期化を行う例を以下に示します.
   DateTime::Format::MySQL
   Exporter::Lite
   IO::Prompt
+  Readonly
+  
   Class::Data::Inheritable (DBIx::MoCo で使用)
   UNIVERSAL::require (DBIx::MoCo で使用)
   List::MoreUtils (DBIx::MoCo で使用)

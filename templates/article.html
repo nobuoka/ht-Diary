@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <title>Diary - index</title>
+  </head>
+  <body>
+    <div>
+      <h1>Diary - [% user.name | html %] さんの日記記事</h1>
+      <article>
+        <h1>[% article.title | html %]</h1>
+        <div><pre>[% article.body | html %]</pre></div>
+      </article>
+    </div>
+  </body>
+</html>
