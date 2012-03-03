@@ -25,7 +25,7 @@ sub startup : Test(startup => 2) {
     # ユーザー作成
     ok 
         $self->{'user'} = Diary::MoCo::User->create( 
-            name => 'test_user_1', editor_cmd => 'vi', encoding => 'UTF-8' ), 
+            name => 'test_user_1' ), 
         'create user';
 }
 

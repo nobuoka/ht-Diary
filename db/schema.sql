@@ -1,8 +1,6 @@
 CREATE TABLE user (
     id  BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(64) NOT NULL,
-    editor_cmd VARCHAR(1024) NOT NULL,
-    encoding   VARCHAR(64) NOT NULL,
     PRIMARY KEY (id),
     UNIQUE KEY (name)
 );
