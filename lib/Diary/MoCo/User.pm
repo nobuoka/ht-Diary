@@ -6,6 +6,8 @@ use base 'Diary::MoCo';
 
 use Carp qw( croak );
 use Diary::MoCo::Article;
+use Diary::MoCo::UserHatena;
+use Diary::MoCo::Session;
 
 __PACKAGE__->table( 'user' );
 __PACKAGE__->utf8_columns( 'name' );
@@ -60,6 +62,28 @@ sub select_article_by_id {
         user_id => $self->id,
     );
     return $article;
+}
+
+###
+# このユーザーオブジェクトに結び付けられた UserHatena オブジェクトを新たに生成します
+sub create_associated_user_hatena {
+    my $self = shift;
+    my ( $hatena_name ) = @_;
+
+    my $user_hatena = Diary::MoCo::UserHatena->create(
+        name          => $hatena_name,
+        assoc_user_id => $self->id,
+    );
+    return $user_hatena;
+}
+
+sub new_session {
+    my $self = shift;
+    #my () = @_;
+
+    # 
+    my $session_id = Diary::MoCo::Session->new_session( $self->id );
+    return $session_id;
 }
 
 1;

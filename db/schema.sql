@@ -5,6 +5,12 @@ CREATE TABLE user (
     UNIQUE KEY (name)
 );
 
+CREATE TABLE user_hatena (
+    name VARCHAR(64) NOT NULL,
+    assoc_user_id BIGINT UNSIGNED NOT NULL,
+    PRIMARY KEY (name)
+);
+
 CREATE TABLE entry (
     id      BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     user_id BIGINT UNSIGNED NOT NULL,
@@ -12,5 +18,11 @@ CREATE TABLE entry (
     body    LONGTEXT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT 0,
     updated_on DATETIME NOT NULL DEFAULT 0,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE session (
+    id      VARCHAR(256)    NOT NULL,
+    user_id BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY (id)
 );

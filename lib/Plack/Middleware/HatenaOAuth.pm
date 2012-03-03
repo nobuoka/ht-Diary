@@ -59,7 +59,7 @@ sub call {
                     $res->is_success or die;
                     $session->set('hatenaoauth_user_info', decode_json($res->decoded_content || $res->content));
                 }
-                $res->redirect( $session->get('hatenaoauth_location') || '/' );
+                $res->redirect( $session->get('hatenaoauth_location') || '/auth.callback_hatena' );
                 $session->remove('hatenaoauth_location');
             } else {
                 my $request_token = $self->consumer->get_request_token(
