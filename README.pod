@@ -105,3 +105,7 @@ diary という DB 名で DB の初期化を行う例を以下に示します.
   Parse::RecDescent
   Plack::Middleware::Debug
   Plack::Middleware::ReverseProxy
+  Plack::Middleware::Session
+  OAuth::Lite::Consumer
+  JSON::XS
+  IO::Socket::SSL

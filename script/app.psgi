@@ -28,6 +28,15 @@ builder {
 
     enable "Plack::Middleware::ReverseProxy";
 
+    # hatenatraining の記事中のサンプルコードをそのまま使用
+    enable 'Session';
+    enable 'Plack::Middleware::HatenaOAuth',
+        consumer_key       => 'vUarxVrr0NHiTg==',
+        consumer_secret    => 'RqbbFaPN2ubYqL/+0F5gKUe7dHc=',
+        login_path         => '/login',
+        # ua                 => LWP::UserAgent->new(...);
+        ;
+
     sub {
         my $env = shift;
         $namespace->process($env, {
