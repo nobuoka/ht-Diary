@@ -1,41 +1,10 @@
 =encoding utf8
 
-=head1 NAME
+=head1 DESCRIPTION
 
-diary.pl -- コマンドラインインターフェースで日記を書けるツール
-
-=head1 USAGE
-
-日記記事を追加するには, add コマンドを使用します. 
-記事タイトルが article_title である日記記事を新たに追加するには, 
-以下のコマンドを使用してください. 
-
-  $ dialy.pl add article_title
-
-userconf で指定したテキストエディタが起動するので, 記事本文を入力してください. 
-テキストエディタを終了すると, 記事の追加が完了します. 
-その際, 新たな記事の ID が表示されます. 
-
-既存の記事を編集するには, 記事 ID を引数にして edit コマンドを使用します. 
-
-  $ dialy.pl edit article_id
-
-既存の記事一覧を表示するには, list コマンドを使用します. 
-
-  $ dialy.pl list
-
-既存の記事を削除するには, 記事 ID を引数にして delete コマンドを使用します. 
-
-  $ dialy.pl delete article_id
-
-初めて dialy.pl を使用するユーザーは, まず初めに userconf コマンドを使用して, 
-記事本文入力用のテキストエディタと, そのエンコーディングを指定してください. 
-例えば, テキストエディタとして vim を, 文字エンコーディングとして UTF-8 を
-使用する場合は, 以下のようにします. 
-
-  $ dialy.pl userconf vim UTF-8
-
-初めて使用するユーザーの場合は, このとき同時にユーザー登録されます. 
+DBIx::MoCo を用いた習作.
+日記を記述するためのアプリケーションで, 
+ローカルアプリケーションと web アプリケーションのためにそれぞれブランチを切っています. 
 
 =head1 CONFIGURATION AND ENVIRONMENT
 
