@@ -1,17 +1,11 @@
-<!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="UTF-8">
-    <title>Diary - Articles</title>
-  </head>
-  <body>
-    <div>
+[% WRAPPER 'wrapper.page.html' %]
+   <div>
       <h1>Diary - index</h1>
       <h2>[% user.name %] さんの日記記事一覧</h2>
       [% IF articles_on_page.length() != 0 %]
       <ul>
         [% FOREACH article IN articles_on_page %]
-        <li><a href="/article?id=[% article.id | html %]">[% article.title | html %]</a></li>
+        <li><a href="/user:[% user.name | uri %]/article:[% article.id | uri %]">[% article.title | html %]</a></li>
         [% END %]
       </ul>
       [% ELSE %]
@@ -23,28 +17,11 @@
       <div class="pager">
         [% p = 1 %]
         [% WHILE p <= num_pages %]
-        <a href="/articles?page=[% p | url %]">[% p | html %]</a>
+        <a href="/user:[% user.name | uri %]/articles?page=[% p | uri %]">[% p | html %]</a>
         [%   p = p + 1 %]
         [% END %]
       </div>
       [% END %]
 
-      <div>
-        <h2>新規記事作成</h2>
-        <form action="/articles" method="POST">
-          <div>
-            <label for="input-article-title">title</label>
-            <input type="text" name="title" id="input-article-title">
-          </div>
-          <div>
-            <label for="input-article-body">body</label>
-            <textarea id="input-article-body" name="body"></textarea>
-          </div>
-          <div>
-            <input type="submit">
-          </div>
-        </form>
-      </div>
-    </div>
-  </body>
-</html>
+   </div>
+[% END %]

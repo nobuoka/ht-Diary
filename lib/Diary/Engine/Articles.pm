@@ -19,6 +19,7 @@ sub default : Public {
 sub _get {
     my ( $self, $r ) = @_;
 
+    # パラメータの取得と確認
     my $page = $r->req->param('page');
     if ( ! defined $page ) {
         $page = '1';
@@ -29,10 +30,22 @@ sub _get {
         $r->res->content( '404 NOT FOUND' );
         return;
     }
+    my $user_name = $r->req->uri->param('user_name');
+    if ( ! defined $user_name ) {
+        # 例外
+        $r->res->code( '404' );
+        $r->res->content( '404 NOT FOUND : user_name undefined' );
+        return;
+    }
 
-    # とりあえずユーザー名は決めうち
-    my $user = Diary::MoCo::User->find( name => 'nobuoka' )
-        or die "can't find you on database. please do userconf command at first.";
+    # User オブジェクトの取得; 失敗の場合は 404 エラー
+    my $user = Diary::MoCo::User->find( name => $user_name );
+    if ( ! defined $user ) {
+        # 例外
+        $r->res->code( '404' );
+        $r->res->content( '404 NOT FOUND : unknown user (' . $user_name . ')' );
+        return;
+    }
 
     # TODO:
     # ここら辺はモデル側を変更する必要あり
@@ -57,6 +70,7 @@ sub _get {
 sub _post{
     my ( $self, $r ) = @_;
 
+    # パラメータの取得と確認
     my $title = $r->req->param('title');
     my $body  = $r->req->param('body' );
     if ( ! defined $title ) {
@@ -71,10 +85,22 @@ sub _post{
         $r->res->content( '400 BAD REQUEST : no body' );
         return;
     }
+    my $user_name = $r->req->uri->param('user_name');
+    if ( ! defined $user_name ) {
+        # 例外
+        $r->res->code( '404' );
+        $r->res->content( '404 NOT FOUND : user_name undefined' );
+        return;
+    }
 
-    # とりあえずユーザー名は決めうち
-    my $user = Diary::MoCo::User->find( name => 'nobuoka' )
-        or die "can't find you on database. please do userconf command at first.";
+    # User オブジェクトの取得; 失敗の場合は 404 エラー
+    my $user = Diary::MoCo::User->find( name => $user_name );
+    if ( ! defined $user ) {
+        # 例外
+        $r->res->code( '404' );
+        $r->res->content( '404 NOT FOUND' );
+        return;
+    }
 
     my $article = $user->create_article( $title, $body );
     $r->res->redirect( '/article?id=' . $article->id );

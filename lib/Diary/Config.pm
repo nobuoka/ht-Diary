@@ -15,6 +15,7 @@ __PACKAGE__->setup({
         '^/images\/',
         '^/js\/',
         '^/css\/',
+        '^/style\/',
         '^/favicon\.ico',
     ],
     URI => {
@@ -33,6 +34,15 @@ __PACKAGE__->setup({
 sub uri_filter {
     my $uri = shift;
     my $path = $uri->path;
+    if ( $path =~ m{\A/user%3A([^/?]+)/articles([.]|/|\z)} ) {
+        $uri->path( '/articles' . $2 );
+        $uri->param( user_name => $1 );
+    }
+    elsif ( $path =~ m{\A/user%3A([^/?]+)/article%3A([^/?]+)([.]|/|\z)} ) {
+        $uri->path( '/article' . $3 );
+        $uri->param( user_name  => $1 );
+        $uri->param( article_id => $2 );
+    }
     $uri;
 }
 

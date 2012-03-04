@@ -1,0 +1,10 @@
+    <div>
+      [% IF r.user %]
+      <span>logged in : [% r.user.name | html %]</span>
+      [% ELSE %]
+      <form method="POST" action="/login">
+        <div><input type="submit" value="login"></div>
+      </form>
+      [% END %]
+    </div>
+ 

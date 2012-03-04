@@ -1,19 +1,16 @@
-<!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="UTF-8">
-    <title>Diary - Article</title>
-  </head>
-  <body>
+[% WRAPPER 'wrapper.page.html' %]
     <div>
       <h1>Diary - [% user.name | html %] さんの日記記事</h1>
       <article>
         <h1>[% article.title | html %]</h1>
         <div><pre>[% article.body | html %]</pre></div>
       </article>
+
+      [% IF r.user.id == user.id %]
       <form action="/article.delete?id=[% article.id | url %]" method="POST">
         <div><input type="submit" value="記事を削除する"></div>
       </form>
+      [% END %]
+
     </div>
-  </body>
-</html>
+[% END %]

@@ -11,11 +11,27 @@ sub default : Public {
 
 sub _get {
     my ($self, $r) = @_;
-    my $article_id = $r->req->param('id');
+    my $article_id = $r->req->uri->param('article_id');
 
-    # とりあえずユーザー名は決めうち
-    my $user = Diary::MoCo::User->find( name => 'nobuoka' )
-        or die "can't find you on database. please do userconf command at first.";
+    # パラメータの取得
+    my $user_name = $r->req->uri->param('user_name');
+    if ( ! defined $user_name ) {
+        # 例外
+        $r->res->code( '404' );
+        $r->res->content( '404 NOT FOUND' );
+        return;
+    }
+
+    # User オブジェクトの取得; 失敗の場合は 404 エラー
+    my $user = Diary::MoCo::User->find( name => $user_name );
+    if ( ! defined $user ) {
+        # 例外
+        $r->res->code( '404' );
+        $r->res->content( '404 NOT FOUND' );
+        return;
+    }
+
+    # Article オブジェクトの取得
     my $article = $user->select_article_by_id( $article_id );
     $r->stash->param(
         user    => $user,
@@ -32,11 +48,26 @@ sub delete : Public {
 
 sub _delete_post {
     my ($self, $r) = @_;
-    my $article_id = $r->req->param('id');
+    my $article_id = $r->req->uri->param('article_id');
 
-    # とりあえずユーザー名は決めうち
-    my $user = Diary::MoCo::User->find( name => 'nobuoka' )
-        or die "can't find you on database. please do userconf command at first.";
+    # パラメータの取得
+    my $user_name = $r->req->uri->param('user_name');
+    if ( ! defined $user_name ) {
+        # 例外
+        $r->res->code( '404' );
+        $r->res->content( '404 NOT FOUND' );
+        return;
+    }
+
+    # User オブジェクトの取得; 失敗の場合は 404 エラー
+    my $user = Diary::MoCo::User->find( name => $user_name );
+    if ( ! defined $user ) {
+        # 例外
+        $r->res->code( '404' );
+        $r->res->content( '404 NOT FOUND' );
+        return;
+    }
+
     $user->delete_article_by_id( $article_id )
         or die "failed to delete article (id=$article_id)";
     $r->res->redirect('/articles');

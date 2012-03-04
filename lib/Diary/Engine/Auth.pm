@@ -23,7 +23,7 @@ sub _callback_hatena_get {
         return;
     }
 
-    # 既に存在するユーザー?
+    # 既に存在するユーザーかどうか
     # 存在している場合, 新しい session を開始
     my $user_hatena = Diary::MoCo::UserHatena->find( name => $hatena_user_name );
     my $user;
@@ -39,6 +39,7 @@ sub _callback_hatena_get {
     my $session_id = $user->new_session();
     $r->req->session->{'session_id'} = $session_id;
 
+    # TODO: リダイレクト先をログイン処理直前のページにする
     $r->res->redirect('/');
 }
 
