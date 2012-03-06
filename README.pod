@@ -110,3 +110,4 @@ diary という DB 名で DB の初期化を行う例を以下に示します.
   JSON::XS
   IO::Socket::SSL
   String::Random
+  LWP::Protocol::https
