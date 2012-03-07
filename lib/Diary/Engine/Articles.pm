@@ -103,7 +103,7 @@ sub _post{
     }
 
     my $article = $user->create_article( $title, $body );
-    $r->res->redirect( '/article?id=' . $article->id );
+    $r->res->redirect( '/user:' . $user_name . '/article:' . $article->id );
     #print '[SUCCESS] wrote new article (id: ', $article->id, ') : ', $article->title, "\n";
     #$r->res->content_type('text/plain');
     #$r->res->content('Welcome to the Ridge world!');
