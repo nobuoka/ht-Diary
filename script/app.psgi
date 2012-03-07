@@ -10,6 +10,9 @@ use Path::Class;
 use Plack::Builder;
 use Cache::MemoryCache;
 
+use LWP::UserAgent;
+use OAuth::Lite::Agent;
+
 my $namespace = 'Diary';
 $namespace->use or die $@;
 
@@ -29,12 +32,15 @@ builder {
     enable "Plack::Middleware::ReverseProxy";
 
     # hatenatraining の記事中のサンプルコードをそのまま使用
+    # (proxy のため ua 設定のみ追加)
     enable 'Session';
+    my $ua = LWP::UserAgent->new();
+    $ua->env_proxy(); # 環境変数のプロキシ設定を読み込み
     enable 'Plack::Middleware::HatenaOAuth',
         consumer_key       => 'vUarxVrr0NHiTg==',
         consumer_secret    => 'RqbbFaPN2ubYqL/+0F5gKUe7dHc=',
         login_path         => '/login',
-        # ua                 => LWP::UserAgent->new(...);
+        ua                 => $ua,
         ;
 
     sub {

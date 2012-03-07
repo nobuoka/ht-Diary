@@ -65,6 +65,16 @@ diary という DB 名で DB の初期化を行う例を以下に示します.
 また, config/db_for_production.conf ファイルや config/db_for_test.conf ファイルも
 確認なしで上書きされます. 
 
+=head2 PROXY SERVER CONFIGURATION
+
+はてなの OAuth 認証を行う際に, はてなのサーバーと通信を行います. 
+その際, プロキシサーバーを通しての通信が必要な場合は, プロキシサーバーのアドレスを
+
+  http_proxy
+  https_proxy
+
+環境変数に予め設定しておいてください.
+
 =head1 DEPENDENCIES
 
 以下の CPAN モジュールがインストール済みである必要があります. 

@@ -43,6 +43,7 @@ sub call {
             my $consumer = $self->consumer;
             my $verifier = $req->param('oauth_verifier');
 
+            # login_path への oauth_verifier パラメータを伴うリクエスト
             if ( $verifier ) {
                 my $access_token = $consumer->get_access_token(
                     token    => $session->get('hatenaoauth_request_token'),
@@ -61,8 +62,10 @@ sub call {
                 }
                 $res->redirect( $session->get('hatenaoauth_location') || '/auth.callback_hatena' );
                 $session->remove('hatenaoauth_location');
-            } else {
-                my $request_token = $self->consumer->get_request_token(
+            }
+            # login_path への oauth_verifier パラメータを伴わないリクエスト
+            else {
+                my $request_token = $consumer->get_request_token(
                     callback_url => [ split /\?/, $req->uri, 2]->[0],
                     scope        => 'read_public',
                 ) or die $consumer->errstr;
