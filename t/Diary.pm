@@ -18,7 +18,7 @@ if ( !-f $dbconfpath ) {
 Diary::Database->load_db_config( $dbconfpath );
 
 sub truncate_db {
-    for ( qw(user entry) ) {
+    for ( qw(user article) ) {
         Diary::Database->execute( "TRUNCATE TABLE $_" );
     }
 }

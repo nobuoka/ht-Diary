@@ -5,7 +5,7 @@ CREATE TABLE user (
     UNIQUE KEY (name)
 );
 
-CREATE TABLE entry (
+CREATE TABLE article (
     id      BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     user_id BIGINT UNSIGNED NOT NULL,
     title   VARCHAR(512) NOT NULL,
