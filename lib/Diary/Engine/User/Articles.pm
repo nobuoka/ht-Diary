@@ -1,4 +1,4 @@
-package Diary::Engine::Articles;
+package Diary::Engine::User::Articles;
 use strict;
 use warnings;
 use utf8;

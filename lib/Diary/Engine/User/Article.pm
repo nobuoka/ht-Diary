@@ -1,4 +1,4 @@
-package Diary::Engine::Article;
+package Diary::Engine::User::Article;
 use strict;
 use warnings;
 use Diary::Engine -Base;
@@ -33,7 +33,14 @@ sub _get {
 
     # Article オブジェクトの取得
     my $article = $user->select_article_by_id( $article_id );
-    $r->stash->param(
+    if ( ! defined $article ) {
+        # 例外
+        $r->res->code( '404' );
+        $r->res->content( '404 NOT FOUND' );
+        return;
+    }
+
+   $r->stash->param(
         user    => $user,
         article => $article,
     );
@@ -70,7 +77,7 @@ sub _delete_post {
 
     $user->delete_article_by_id( $article_id )
         or die "failed to delete article (id=$article_id)";
-    $r->res->redirect('/articles');
+    $r->res->redirect( '/user:' . $user_name . '/articles' );
     return;
     $r->stash->param(
         user    => $user,

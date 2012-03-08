@@ -7,7 +7,7 @@
       </article>
 
       [% IF r.user.id == user.id %]
-      <form action="/article.delete?id=[% article.id | url %]" method="POST">
+      <form action="/user:[% user.name | url %]/article:[% article.id | url %];delete" method="POST">
         <div><input type="submit" value="記事を削除する"></div>
       </form>
       [% END %]
