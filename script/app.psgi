@@ -4,7 +4,7 @@ use warnings;
 use lib glob 'modules/*/lib';
 use lib 'lib';
 
-
+use List::Util ('first');
 use UNIVERSAL::require;
 use Path::Class;
 use Plack::Builder;
@@ -34,8 +34,15 @@ builder {
     # hatenatraining の記事中のサンプルコードをそのまま使用
     # (proxy のため ua 設定のみ追加)
     enable 'Session';
+
+    # HTTP プロキシを環境変数から読み込んで設定 (case insensitive)
+    # (大文字小文字が異なる複数の 'http_proxy' がある場合はどれが選択されるか未定義)
+    # (HTTPS は Crypt::SSLeay モジュール内で HTTPS_PROXY 環境変数を読んでくれる
+    #   参考 : http://perl-users.jp/articles/advent-calendar/2009/casual/17.html )
     my $ua = LWP::UserAgent->new();
-    $ua->env_proxy(); # 環境変数のプロキシ設定を読み込み
+    my $k = first { lc($_) eq 'http_proxy' } keys %ENV;
+    $ua->proxy( 'http', $ENV{$k} ) if $k; 
+
     enable 'Plack::Middleware::HatenaOAuth',
         consumer_key       => 'vUarxVrr0NHiTg==',
         consumer_secret    => 'RqbbFaPN2ubYqL/+0F5gKUe7dHc=',
