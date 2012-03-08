@@ -7,7 +7,6 @@ use base 'Diary::MoCo';
 use Carp qw( croak );
 use Diary::MoCo::Article;
 use Diary::MoCo::UserHatena;
-use Diary::MoCo::Session;
 
 __PACKAGE__->table( 'user' );
 __PACKAGE__->utf8_columns( 'name' );
@@ -75,15 +74,6 @@ sub create_associated_user_hatena {
         assoc_user_id => $self->id,
     );
     return $user_hatena;
-}
-
-sub new_session {
-    my $self = shift;
-    #my () = @_;
-
-    # 
-    my $session_id = Diary::MoCo::Session->new_session( $self->id );
-    return $session_id;
 }
 
 1;

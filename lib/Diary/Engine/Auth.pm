@@ -10,6 +10,9 @@ sub callback_hatena : Public {
     return $r->follow_method;
 }
 
+##
+# Hatena OAuth でのログイン時のコールバック先
+#
 sub _callback_hatena_get {
     my ($self, $r) = @_;
     my $article_id = $r->req->param('id');
@@ -36,8 +39,7 @@ sub _callback_hatena_get {
         $user = Diary::MoCo::User->create( name => $hatena_user_name );
         $user->create_associated_user_hatena( $hatena_user_name );
     }
-    my $session_id = $user->new_session();
-    $r->req->session->{'session_id'} = $session_id;
+    $r->req->session->{'user_id'} = $user->id;
 
     # TODO: リダイレクト先をログイン処理直前のページにする
     $r->res->redirect('/');

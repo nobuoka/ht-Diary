@@ -20,9 +20,3 @@ CREATE TABLE entry (
     updated_on DATETIME NOT NULL DEFAULT 0,
     PRIMARY KEY (id)
 );
-
-CREATE TABLE session (
-    id      VARCHAR(256)    NOT NULL,
-    user_id BIGINT UNSIGNED NOT NULL,
-    PRIMARY KEY (id)
-);

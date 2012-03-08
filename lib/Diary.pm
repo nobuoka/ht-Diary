@@ -4,7 +4,6 @@ use warnings;
 use base qw/Ridge/;
 
 use Diary::Database;
-use Diary::MoCo::Session;
 
 __PACKAGE__->configure;
 
@@ -31,11 +30,11 @@ sub truncate_db {
 sub user {
     my $self = shift;
 
-    my $session_id = $self->req->session->{'session_id'}
+    my $user_id = $self->req->session->{'user_id'}
             or return;
-    my $session = Diary::MoCo::Session->find( id => $session_id )
+    my $user = Diary::MoCo::User->find( id => $user_id )
             or return;
-    return $session->user;
+    return $user;
 }
 
 1;
