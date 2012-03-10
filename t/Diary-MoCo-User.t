@@ -83,18 +83,4 @@ sub del_article : Test(4) {
     throws_ok { $user->delete_article_by_id( -1 ) } qr/not found/, 'not found';
 }
 
-sub edit_article : Test(2) {
-    my $self = shift;
-    my $user = $self->{'user'};
-
-    my $new_title = 'タイトル';
-    my $new_body  = '本文';
-    my $article = $user->create_article( 'test', 'test' );
-    $article->edit( $new_title, $new_body );
-
-    my $a2 = $user->select_article_by_id( $article->id );
-    is $a2->title, $new_title;
-    is $a2->body,  $new_body ;
-}
-
 __PACKAGE__->runtests;

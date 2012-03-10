@@ -42,7 +42,7 @@ sub delete_article_by_id {
     my $self = shift;
     my ( $article_id ) = @_;
     if( !defined $article_id ) {
-        croak 'invalid argument : $article_body not defined';
+        croak 'invalid argument : $article_id not defined';
     }
 
     my $article = $self->select_article_by_id( $article_id )
@@ -54,6 +54,9 @@ sub delete_article_by_id {
 sub select_article_by_id {
     my $self = shift;
     my ( $article_id ) = @_;
+    if( !defined $article_id ) {
+        croak 'invalid argument : $article_id not defined';
+    }
 
     my $article = Diary::MoCo::Article->find(
         id => $article_id,
