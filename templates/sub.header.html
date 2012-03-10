@@ -1,9 +1,15 @@
     <div>
       [% IF r.user %]
       <span>logged in : [% r.user.name | html %]</span>
+      <form method="POST" action="/auth.logout">
+        <div><input type="submit" value="logout"></div>
+      </form>
       [% ELSE %]
       <form method="POST" action="/login">
-        <div><input type="submit" value="login"></div>
+        <div>
+          <input type="submit" value="login">
+          <input type="hidden" name="location" value="[% r.req.env.REQUEST_URI | html %]">
+        </div>
       </form>
       [% END %]
     </div>

@@ -16,6 +16,9 @@ use Plack::Session;
 use OAuth::Lite::Consumer;
 use JSON::XS;
 
+use Diary::MoCo::UserHatena;
+use Diary::MoCo::User;
+
 sub prepare_app {
     my ($self) = @_;
     die 'require consumer_key and consumer_secret'
@@ -51,6 +54,7 @@ sub call {
                 ) or die $consumer->errstr;
                 $session->remove('hatenaoauth_request_token');
 
+                my $hatena_user_info;
                 {
                     my $res = $consumer->request(
                         method => 'POST',
@@ -58,9 +62,24 @@ sub call {
                         token  => $access_token,
                     );
                     $res->is_success or die;
-                    $session->set('hatenaoauth_user_info', decode_json($res->decoded_content || $res->content));
+                    $hatena_user_info =  decode_json($res->decoded_content || $res->content);
                 }
-                $res->redirect( $session->get('hatenaoauth_location') || '/auth.callback_hatena' );
+
+                # 既存のユーザーかどうか確認し, まだ存在していない場合 user 生成
+                my $hatena_user_name = $hatena_user_info->{'url_name'};
+                my $user_hatena = Diary::MoCo::UserHatena->find( name => $hatena_user_name );
+                my $user;
+                if ( $user_hatena ) {
+                    $user = $user_hatena->user;
+                }
+                else {
+                    # とりあえず hatena_user_name でユーザーを作る
+                    $user = Diary::MoCo::User->create( name => $hatena_user_name );
+                    $user->create_associated_user_hatena( $hatena_user_name );
+                }
+                $session->set( 'user_id' => $user->id );
+
+                $res->redirect( $session->get('hatenaoauth_location') || '/' );
                 $session->remove('hatenaoauth_location');
             }
             # login_path への oauth_verifier パラメータを伴わないリクエスト
@@ -78,9 +97,6 @@ sub call {
         },
     };
 
-    $env->{'hatena.user'} = ($session->get('hatenaoauth_user_info') || {})->{url_name};
-    # 追加
-    $env->{'hatena.user.detail'} = $session->get('hatenaoauth_user_info');
     return ($handlers->{$env->{PATH_INFO}} || $self->app)->($env);
 }
 
