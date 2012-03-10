@@ -2,6 +2,7 @@ package t::Diary;
 
 use strict;
 use warnings;
+use utf8;
 
 use Diary::Database;
 

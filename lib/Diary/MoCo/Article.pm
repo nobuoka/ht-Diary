@@ -1,9 +1,8 @@
+package Diary::MoCo::Article;
 use strict;
 use warnings;
 use utf8;
-
-package Diary::MoCo::Article;
-use base 'Diary::MoCo';
+use base qw(Diary::MoCo);
 
 __PACKAGE__->table( 'article' );
 __PACKAGE__->utf8_columns( 'title' );

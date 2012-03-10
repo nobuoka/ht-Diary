@@ -1,19 +1,14 @@
-###
-# Diary::MoCo::User のテスト用クラス
-# 
 package t::Diary::MoCo::User;
-use base 'Test::Class';
-
 use strict;
 use warnings;
 use utf8;
-
-# パスの追加
-use lib '.', 'lib', 'modules/DBIx-MoCo/lib';
+use base qw(Test::Class);
+# Diary::MoCo::User のテスト用クラス
 
 use Test::More;
 use Test::Exception;
 
+use lib '.', 'lib', 'modules/DBIx-MoCo/lib';
 use t::Diary;
 use Diary::MoCo::User;
 

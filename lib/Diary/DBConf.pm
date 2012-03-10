@@ -1,13 +1,12 @@
+package Diary::DBConf;
 use strict;
 use warnings;
+use utf8;
+# 日記のデータベースに接続する際の mysql ユーザー名, パスワード, 
+# 接続先 DB 名を記述した設定ファイルのインターフェイスクラス
 
 use IO::File;
 
-###
-# 日記のデータベースに接続する際の mysql ユーザー名, パスワード, 
-# 接続先 DB 名を記述した設定ファイルのインターフェイスクラス
-#
-package Diary::DBConf;
 
 ### Class methods ###
 

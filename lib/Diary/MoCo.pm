@@ -1,14 +1,11 @@
+package Diary::MoCo;
 use strict;
 use warnings;
-
-package Diary::MoCo;
-use base 'DBIx::MoCo';
+use base qw(DBIx::MoCo);
 
 use Diary::Database;
 use DateTime;
 use DateTime::Format::MySQL;
-use UNIVERSAL::require;
-use Exporter::Lite;
 
 __PACKAGE__->db_object( 'Diary::Database' );
 my $infsub_for_datetime_ref = {
@@ -41,11 +38,6 @@ __PACKAGE__->add_trigger(
 __PACKAGE__->add_trigger(
     before_update => sub {
         my ($class, $self, $args) = @_;
-        # for debug
-        #print '[DEBUG] before_update', "\n";
-        #foreach my $arg ( keys %{$args} ) {
-        #    print '     key: ', $arg, "\n";
-        #}
         foreach my $col (qw(updated_on)) {
             if ($class->has_column($col) && !defined $args->{$col}) {
                 $args->{$col} = $class->now.q();

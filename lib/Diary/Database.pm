@@ -1,17 +1,12 @@
+package Diary::Database;
 use strict;
 use warnings;
+use base qw(DBIx::MoCo::DataBase);
 
 use IO::File;
 
 use DBIx::MoCo::DataBase;
 use Diary::DBConf;
-
-package Diary::Database;
-use base 'DBIx::MoCo::DataBase';
-
-#__PACKAGE__->dsn( 'dbi:mysql:dbname=XXXXXX' );
-#__PACKAGE__->username( 'XXXXXXX' );
-#__PACKAGE__->password( 'XXXXXXX' );
 
 sub load_db_config {
     my $pkg = shift;
