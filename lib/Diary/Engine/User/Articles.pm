@@ -20,10 +20,8 @@ sub _get {
     my ( $self, $r ) = @_;
 
     # パラメータの取得と確認
-    my $page = $r->req->param('page');
-    if ( ! defined $page ) {
-        $page = '1';
-    }
+    my $requested_page = $r->req->param('page');
+    my $page = ( defined $requested_page ? $requested_page : '1' );
     if ( $page !~ /\A[1-9]\d*\z/ms ) {
         # 例外
         $r->res->code( '404' );
@@ -56,11 +54,14 @@ sub _get {
     $articles = $articles->sort( sub{ $_[1]->updated_on <=> $_[0]->updated_on } );
     $articles = $articles->slice( $offset, $offset + $limit - 1 );
 
+    if ( $articles->size == 0 and defined $requested_page ) {
+        $r->res->code( '404' );
+    }
     $r->stash->param(
         user             => $user,
         articles_on_page => $articles,
         num_articles     => $num_articles,
-        num_pages        => int( ( $num_articles - 1 ) / $NUM_ITEM_PER_PAGE ) + 1,
+        num_pages        => int( ( $num_articles - 1 ) / $NUM_ITEM_PER_PAGE + 1 ),
         cur_page         => $page,
     );
     #$r->res->content_type('text/plain');
