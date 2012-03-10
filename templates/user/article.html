@@ -7,6 +7,9 @@
       </article>
 
       [% IF r.user.id == user.id %]
+      <div>
+        <a href="/user:[% user.name | url %]/article:[% article.id | url %];edit">編集する</a>
+      </div>
       <form action="/user:[% user.name | url %]/article:[% article.id | url %];delete" method="POST">
         <div><input type="submit" value="記事を削除する"></div>
       </form>

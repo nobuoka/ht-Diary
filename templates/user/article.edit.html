@@ -1,0 +1,13 @@
+[% WRAPPER 'wrapper.page.html' %]
+    <div>
+      <h1>Diary - [% user.name | html %] さんの日記記事</h1>
+      <article>
+        <form action="/user:[% user.name | url %]/article:[% article.id | url %];update" method="POST">
+          <div>title : <input type="text" name="title" value="[% article.title | html %]"></div>
+          <div><textarea name="body">[% article.body | html %]</textarea></div>
+          <div><input type="submit" value="記事を更新"></div>
+        </form>
+      </article>
+
+    </div>
+[% END %]
