@@ -45,15 +45,8 @@ sub _get {
         return;
     }
 
-    # TODO:
-    # ここら辺はモデル側を変更する必要あり
-    my $articles = $user->articles;
-    my $num_articles = $articles->length;
-    my $offset = ( $page - 1 ) * $NUM_ITEM_PER_PAGE;
-    my $limit  = $NUM_ITEM_PER_PAGE;
-    $articles = $articles->sort( sub{ $_[1]->updated_on <=> $_[0]->updated_on } );
-    $articles = $articles->slice( $offset, $offset + $limit - 1 );
-
+    my $articles     = $user->paged_articles( $page, $NUM_ITEM_PER_PAGE );
+    my $num_articles = $user->num_articles;
     if ( $articles->size == 0 and defined $requested_page ) {
         $r->res->code( '404' );
     }
@@ -64,8 +57,6 @@ sub _get {
         num_pages        => int( ( $num_articles - 1 ) / $NUM_ITEM_PER_PAGE + 1 ),
         cur_page         => $page,
     );
-    #$r->res->content_type('text/plain');
-    #$r->res->content('Welcome to the Ridge world!');
 }
 
 sub _post{

@@ -19,6 +19,33 @@ sub articles {
     );
 }
 
+sub paged_articles {
+    my $self = shift;
+    my ( $page_num, $num_per_page ) = @_;
+    if ( ! defined $page_num ) {
+        croak 'invalid arguments : $page_num not defined';
+    }
+    if ( $page_num <= 0 ) {
+        croak 'invalid arguments : ページ番号は 1 以上の数字である必要があります.';
+    }
+    if ( ! defined $num_per_page ) {
+        croak 'invalid arguments : $num_per_page not defined';
+    }
+
+    my $offset = ( $page_num - 1 ) * $num_per_page;
+    return Diary::MoCo::Article->search(
+        where  => { user_id => $self->id },
+        offset => $offset,
+        limit  => $num_per_page,
+        order  => 'created_on DESC, id DESC',
+    );
+}
+
+sub num_articles {
+    my $self = shift;
+    Diary::MoCo::Article->count( user_id => $self->id );
+}
+
 sub create_article {
     my $self = shift;
     if ( @_ != 2 ) {
