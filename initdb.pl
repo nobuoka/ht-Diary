@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use utf8;
 
 use IO::Prompt;
 use IO::Pipe;

@@ -1,8 +1,7 @@
 package t::Diary::MoCo;
-use base 'Test::Class';
-
 use strict;
 use warnings;
+use base qw(Test::Class);
 
 use lib '.', 'lib', 'modules/DBIx-MoCo/lib';
 
