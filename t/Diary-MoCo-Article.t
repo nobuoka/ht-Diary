@@ -66,7 +66,7 @@ sub edit_article : Test(7) {
     my $article = $user->create_article( 'test', 'test' );
     $article->edit( $new_title, $new_body );
 
-    my $article = $user->select_article_by_id( $article->id );
+    $article = $user->select_article_by_id( $article->id );
     is $article->title, $new_title;
     is $article->body,  $new_body ;
 

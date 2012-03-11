@@ -21,6 +21,16 @@ my $root = file(__FILE__)->parent->parent;
 $ENV{GATEWAY_INTERFACE} = 1; ### disable plack's accesslog
 $ENV{PLACK_ENV} = ($ENV{RIDGE_ENV} =~ /production|staging/) ? 'production' : 'development';
 
+# DB の設定を読み込んで, 接続先 DB を設定
+# Database に関する設定を読み込み
+my $dbconfpath = "config/db_for_production.conf";
+if ( !-f $dbconfpath ) {
+    die '接続先 DB の設定ファイルが存在しません. ' . "\n"
+                . 'はじめに initdb.pl を使用して接続先 DB の設定を行ってください.' . "\n";
+}
+Diary::Database->load_db_config( $dbconfpath );
+
+
 builder {
     unless ($ENV{PLACK_ENV} eq 'production') {
         enable "Plack::Middleware::Debug";
