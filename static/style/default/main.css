@@ -1,14 +1,50 @@
 html {
     height: 100%;
     background-color: #DDDDDD;
+    padding: 0 10px;
 }
 
 body {
-    width: 42em;
+    max-width: 42em;
+    min-width: 200px;
     min-height: 100%;
     margin: 0 auto;
     border: solid 0 #999999;
     border-width: 0 1px;
     padding: 0 1em;
     background-color: #FFFFFF;
+}
+
+#header {
+    padding-top: 5px;
+}
+#header:after {
+    display: block;
+    content: "";
+    clear: both;
+}
+#header .navi {
+    float: left;
+}
+#header .auth {
+    float: right;
+}
+#header .auth form {
+    display: inline;
+}
+
+
+.article .article-title {
+    margin: 0;
+    border-bottom: solid 1px #999999;
+    padding: 0 5px 2px 0;
+}
+.article .article-body {
+    margin: 1em;
+}
+.article .article-date {
+    border-top: solid 1px #999999;
+    padding: 2px 5px 0 0;
+    font-size: 75%;
+    text-align: right;
 }

@@ -1,27 +1,24 @@
-[% WRAPPER 'wrapper.page.html' %]
+[%- SET diary_title = user.name _ ' の日記' -%]
+[%- SET page_title  = '記事一覧'            -%]
+[% WRAPPER 'wrapper.page.html' title = page_title _ ' - ' _ diary_title %]
    <div>
-      <h1>Diary - index</h1>
-      <h2>[% user.name %] さんの日記記事一覧</h2>
+      <h1><a href="/user:[% user.name | html %]/articles">[% user.name | html %] の日記</a></h1>
+      <h2>日記記事一覧</h2>
+
+      [% INCLUDE 'sub.pager.html' %]
+
       [% IF articles_on_page.length() != 0 %]
       <ul>
         [% FOREACH article IN articles_on_page %]
-        <li><a href="/user:[% user.name | uri %]/article:[% article.id | uri %]">[% article.title | html %]</a></li>
+        <li><a href="/user:[% user.name | uri %]/article:[% article.id | uri %]"
+          >[% article.title | html %]
+          <span class="time-created_on">([% article.created_on.strftime('%Y-%m-%d %H:%M') | html %])</span></a></li>
         [% END %]
       </ul>
       [% ELSE %]
       <p>記事はありません</p>
       [% END %]
 
-      <!-- TODO: test -->
-      [% IF num_pages %]
-      <div class="pager">
-        [% p = 1 %]
-        [% WHILE p <= num_pages %]
-        <a href="/user:[% user.name | uri %]/articles?page=[% p | uri %]">[% p | html %]</a>
-        [%   p = p + 1 %]
-        [% END %]
-      </div>
-      [% END %]
-
-   </div>
+      [% INCLUDE 'sub.pager.html' %]
+    </div>
 [% END %]

@@ -1,16 +1,22 @@
-    <div>
-      [% IF r.user %]
-      <span>logged in : [% r.user.name | html %]</span>
-      <form method="POST" action="/auth.logout">
-        <div><input type="submit" value="logout"></div>
-      </form>
-      [% ELSE %]
-      <form method="POST" action="/login">
-        <div>
+    <div id="header">
+      <div class="navi">
+        <a href="/">Diary Home</a>
+      </div>
+      <div class="auth">
+        [% IF r.user %]
+        <a href="/user:[% r.user.name | html %]/article;newly">新規記事作成</a>
+        |
+        <span>[% r.user.name | html %]</span>
+        |
+        <form method="POST" action="/auth.logout">
+          <input type="submit" value="logout">
+        </form>
+        [% ELSE %]
+        <form method="POST" action="/login">
           <input type="submit" value="login">
           <input type="hidden" name="location" value="[% r.req.env.REQUEST_URI | html %]">
-        </div>
-      </form>
-      [% END %]
+        </form>
+        [% END %]
+      </div>
     </div>
- 
+

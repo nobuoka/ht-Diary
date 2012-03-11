@@ -1,0 +1,14 @@
+      [% IF num_pages %]
+      <div class="pager">
+        <span>page : </span>
+        [% p = 1 %]
+        [% WHILE p <= num_pages %]
+        [%   IF p == cur_page   %]
+        <span class="current-page">[% p | html %]</span>
+        [%   ELSE               %]
+        <a href="/user:[% user.name | uri %]/articles?page=[% p | uri %]">[% p | html %]</a>
+        [%   END                %]
+        [%   p = p + 1          %]
+        [% END %]
+      </div>
+      [% END %]

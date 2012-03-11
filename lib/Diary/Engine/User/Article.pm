@@ -46,6 +46,48 @@ sub _get {
     );
 }
 
+sub newly : Public {
+    my ( $self, $r ) = @_;
+    return $r->follow_method;
+}
+sub _newly_get {
+    my ($self, $r) = @_;
+
+    # ログインユーザー
+    my $auth_user = $r->user;
+    if ( ! defined $auth_user ) {
+        $r->res->code( '401' );
+        $r->res->content( '401 Unauthorized' );
+        return;
+    }
+
+    # URI params
+    my $user_name  = $r->req->uri->param('user_name');
+    if ( ! defined $user_name ) {
+        # 例外
+        $r->res->code( '404' );
+        $r->res->content( '404 NOT FOUND' );
+        return;
+    }
+    if ( $user_name ne $auth_user->name ) {
+        $r->res->code( '403' );
+        $r->res->content( '403 Forbidden' );
+        return;
+    }
+
+    # User オブジェクトの取得; 失敗の場合は 404 エラー
+    my $user = Diary::MoCo::User->find( name => $user_name );
+    if ( ! defined $user ) {
+        # 例外
+        $r->res->code( '404' );
+        $r->res->content( '404 NOT FOUND' );
+        return;
+    }
+    $r->stash->param(
+        user    => $user,
+    );
+}
+
 sub edit : Public {
     my ( $self, $r ) = @_;
     return $r->follow_method;
@@ -59,7 +101,6 @@ sub _edit_get {
         $r->res->code( '401' );
         $r->res->content( '401 Unauthorized' );
         return;
-
     }
 
     # URI params
@@ -77,7 +118,7 @@ sub _edit_get {
         $r->res->content( '404 NOT FOUND' );
         return;
     }
-    if ( $user_name != $auth_user->name ) {
+    if ( $user_name ne $auth_user->name ) {
         $r->res->code( '403' );
         $r->res->content( '403 Forbidden' );
         return;

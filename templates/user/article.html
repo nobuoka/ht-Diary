@@ -1,19 +1,28 @@
-[% WRAPPER 'wrapper.page.html' %]
+[%- SET diary_title = user.name _ ' の日記' -%]
+[%- SET page_title  = article.title         -%]
+[% WRAPPER 'wrapper.page.html' title = page_title _ ' - ' _ diary_title %]
     <div>
-      <h1>Diary - [% user.name | html %] さんの日記記事</h1>
-      <article>
-        <h1>[% article.title | html %]</h1>
-        <div><pre>[% article.body | html %]</pre></div>
-      </article>
+      <h1><a href="/user:[% user.name | html %]/articles">[% user.name | html %] の日記</a></h1>
+      <article class="article">
+        <h1 class="article-title">[% article.title | html %]</h1>
+        <div class="article-body">[% r.conv_lf_to_br_tag( r.esc_html( article.body ) ) %]</div>
+        <div class="article-date">
+          <div class="article-date-created_on">作成日時 : [% article.created_on.strftime('%Y-%m-%d %H:%M') | html %] (UTC)</div>
+          <div class="article-date-updated_on">更新日時 : [% article.updated_on.strftime('%Y-%m-%d %H:%M') | html %] (UTC)</div>
+        </div>
 
-      [% IF r.user.id == user.id %]
-      <div>
-        <a href="/user:[% user.name | url %]/article:[% article.id | url %];edit">編集する</a>
-      </div>
-      <form action="/user:[% user.name | url %]/article:[% article.id | url %];delete" method="POST">
-        <div><input type="submit" value="記事を削除する"></div>
-      </form>
-      [% END %]
+        [% IF r.user.id == user.id %]
+        <section>
+          <h1>記事の管理</h1>
+          <div>
+            <a href="/user:[% user.name | url %]/article:[% article.id | url %];edit">編集する</a>
+          </div>
+          <form action="/user:[% user.name | url %]/article:[% article.id | url %];delete" method="POST">
+            <div><input type="submit" value="記事を削除する"></div>
+          </form>
+        </section>
+        [% END %]
+      </article>
 
     </div>
 [% END %]

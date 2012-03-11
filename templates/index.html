@@ -1,27 +1,12 @@
-[% WRAPPER 'wrapper.page.html' %]
+[%- SET page_title  = 'Diary Home' -%]
+[% WRAPPER 'wrapper.page.html' title = page_title %]
     <div>
-      <h1>Diary</h1>
+      <h1>[% page_title | html %]</h1>
 
       [% IF r.user %]
       <ul>
         <li><a href="/user:[% r.user.name | uri %]/articles">あなたの記事一覧</a></li>
       </ul>
-      <div>
-        <h2>新規記事作成</h2>
-        <form action="/user:[% r.user.name | uri %]/articles" method="POST">
-          <div>
-            <label for="input-article-title">title</label>
-            <input type="text" name="title" id="input-article-title">
-          </div>
-          <div>
-            <label for="input-article-body">body</label>
-            <textarea id="input-article-body" name="body"></textarea>
-          </div>
-          <div>
-            <input type="submit">
-          </div>
-        </form>
-      </div>
       [% ELSE %]
       <p>まずログインしてください。</p>
       [% END %]

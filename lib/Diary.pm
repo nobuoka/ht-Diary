@@ -37,4 +37,30 @@ sub user {
     return $user;
 }
 
+# ------------------
+#  出力用エスケープ
+# ------------------
+
+###
+# HTML 内にテキストとして出力する文字を, HTML として解釈され内容にエスケープ
+sub esc_html {
+    my $self = shift;
+    my ( $str ) = @_;
+
+    $str =~ s/&/&amp;/g;
+    $str =~ s/</&lt;/g;
+    $str =~ s/>/&gt;/g;
+    $str;
+}
+
+###
+# 改行を br タグに
+sub conv_lf_to_br_tag {
+    my $self = shift;
+    my ( $str ) = @_;
+
+    $str =~ s/\n/<br>/g;
+    $str;
+}
+
 1;

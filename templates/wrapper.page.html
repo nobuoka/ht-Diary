@@ -2,11 +2,12 @@
 <html lang="ja">
   <head>
     <meta charset="UTF-8">
-    <title>Diary</title>
+    <title>[% title | html %]</title>
     <link type="text/css" rel="stylesheet" href="/style/default/main.css">
   </head>
   <body>
-    [% INCLUDE sub.header.html %]
+
+    [%- INCLUDE sub.header.html %]
 
     [% content %]
 
