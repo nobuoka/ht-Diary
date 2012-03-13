@@ -121,3 +121,11 @@ diary という DB 名で DB の初期化を行う例を以下に示します.
   IO::Socket::SSL
   String::Random
   LWP::Protocol::https
+  
+  (for test)
+  Test::Class
+  POE
+  POE::Sugar::Args
+  File::MimeInfo
+  HTTP::Request::AsCGI
+  Module::Refresh
