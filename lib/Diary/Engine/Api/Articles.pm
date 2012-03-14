@@ -31,6 +31,15 @@ sub _get {
         $r->res->content( '404 NOT FOUND' );
         return;
     }
+    my $requested_num_per_page = $r->req->param('num_per_page');
+    my $num_per_page = ( defined $requested_num_per_page ? $requested_num_per_page
+                                                         : $NUM_ITEM_PER_PAGE );
+    if ( $page !~ /\A[1-9]\d*\z/ms ) {
+        # 例外
+        $r->res->code( '404' );
+        $r->res->content( '404 NOT FOUND' );
+        return;
+    }
     my $user_name = $r->req->param('user_name');
     if ( ! defined $user_name ) {
         # 例外

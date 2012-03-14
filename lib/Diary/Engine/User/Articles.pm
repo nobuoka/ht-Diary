@@ -55,6 +55,7 @@ sub _get {
         articles_on_page => $articles,
         num_articles     => $num_articles,
         num_pages        => int( ( $num_articles - 1 ) / $NUM_ITEM_PER_PAGE + 1 ),
+        num_per_page     => $NUM_ITEM_PER_PAGE,
         cur_page         => $page,
     );
 }
