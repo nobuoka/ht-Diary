@@ -32,4 +32,17 @@ sub edit {
     $self->save();
 }
 
+###
+# id, title, created_on, updated_on のみの情報を持つハッシュを生成
+# 一覧表示等に用いるため.
+sub to_hash_simple {
+    my $self = shift;
+    return {
+        id         => $self->id        ,
+        title      => $self->title     ,
+        created_on => $self->created_on,
+        updated_on => $self->updated_on,
+    };
+}
+
 1;
