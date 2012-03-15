@@ -34,10 +34,17 @@ body {
 }
 
 
+.article {
+    margin: 2em 0;
+}
 .article .article-title {
     margin: 0;
     border-bottom: solid 1px #999999;
     padding: 0 5px 2px 0;
+    font-size: 140%;
+}
+.article .article-title a {
+    text-decoration: none;
 }
 .article .article-body {
     margin: 1em;

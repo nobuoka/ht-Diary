@@ -51,6 +51,7 @@ sub _get {
         $r->res->code( '404' );
     }
     $r->stash->param(
+        page_specified   => ( defined $requested_page ),
         user             => $user,
         articles_on_page => $articles,
         num_articles     => $num_articles,

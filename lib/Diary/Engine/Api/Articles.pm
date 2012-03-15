@@ -64,7 +64,7 @@ sub _get {
     if ( $r->req->uri->view eq 'json' ) {
         $r->res->content_type( 'text/json' );
         my @hash_articles = map {
-            my $h = $_->to_hash_simple;
+            my $h = $_->to_hash;
             # 日時は ISO 8601 形式の文字列 (UTC)
             $h->{'created_on'} = $h->{'created_on'}->set_time_zone( '+0000' )->strftime('%FT%TZ');
             $h->{'updated_on'} = $h->{'updated_on'}->set_time_zone( '+0000' )->strftime('%FT%TZ');
