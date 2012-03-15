@@ -110,8 +110,20 @@ var ArticlesLoader = {
                                 createElem( "h1", null , [ [ "className", "article-title" ] ] ) );
                         e.appendChild( createElem( "a" , title, [ [ "href", uri ] ]  ) );
                         // 本文
-                        articleElem.appendChild(
-                                createElem( "div", body, [ [ "className", "article-body" ] ] ) );
+                        var e = articleElem.appendChild(
+                                createElem( "div", null, [ [ "className", "article-body" ] ] ) );
+                        bodyLines = body.split( "\n" );
+                        ( function namespace() {
+                            var i;
+                            var len = bodyLines.length;
+                            for ( i = 0; i < len; ++ i ) {
+                                if ( i !== 0 ) {
+                                    e.appendChild( document.createElement( "br" ) );
+                                }
+                                e.appendChild( document.createTextNode( bodyLines[i] ) );
+                            }
+                        })();
+
                         // 日時
                         var e = articleElem.appendChild(
                                 createElem( "div", null, [ [ "className", "article-date" ] ] ) );
