@@ -68,15 +68,15 @@ sub _path_component_filter {
 
     # セミコロン (; - \x3B) で区切られた部分を取り出す
     my ( $t   , $cmd ) = split /%3B/, $path_component, 2;
+    # ピリオド (.) で区切られた部分を取り出す
+    my $idx = rindex( $t, '.' );
+    my ( $bb, $ext );
+    if ( $idx != -1 ) {
+        $ext = substr( $t, $idx + 1, ( length $t ) - $idx - 1 );
+        $t   = substr( $t, 0, $idx );
+    }
     # コロン (: - \x3A) で区切られた部分を取り出す
     my ( $base, $id  ) = split /%3A/, $t, 2;
-    # ピリオド (.) で区切られた部分を取り出す
-    my $idx = rindex( $base, '.' );
-    my $ext;
-    if ( $idx != -1 ) {
-        $ext  = substr( $base, $idx + 1, ( length $base ) - $idx - 1 );
-        $base = substr( $base, 0, $idx );
-    }
     return ( $base, $id, $cmd, $ext );
 }
 

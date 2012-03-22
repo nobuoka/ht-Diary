@@ -10,8 +10,7 @@ var Helper = {};
      */
     Helper.createElem = function createElem( tagname, children, attrs ) {
         var e = document.createElement( tagname );
-        // TODO
-        if ( children === null ) {
+        if ( ! children ) {
             // do nothig
         }
         else if ( Array.isArray( children ) ) {
@@ -28,7 +27,6 @@ var Helper = {};
         else {
             throw new Error( "invalid argument : " + children );
         }
-        // TODO
         if ( attrs ) {
             var i = 0;
             var len = attrs.length;
