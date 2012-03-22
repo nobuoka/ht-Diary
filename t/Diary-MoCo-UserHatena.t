@@ -10,6 +10,7 @@ use Test::Exception;
 
 use lib '.', 'lib', 'modules/DBIx-MoCo/lib';
 use t::Diary;
+use Diary::MoCo::User;
 use Diary::MoCo::UserHatena;
 
 # run before every test 
@@ -27,6 +28,12 @@ sub setup : Test(setup => 3) {
         $self->{'user2'} = Diary::MoCo::User->create( 
             name => 'test_user_2' ), 
         'create user';
+}
+
+sub create_assoc_user_hatena : Test( 1 ) {
+    my $self = shift;
+
+    ok $self->{'user'}->create_associated_user_hatena( 'hatenaid' );
 }
 
 __PACKAGE__->runtests;
