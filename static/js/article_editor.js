@@ -82,6 +82,7 @@ var ArticleEditorManager = null;
         this.articleInfo = {
             article_id  : articleId,
             user_name   : userName,
+            uri         : elemArticleUri
         };
 
         // 編集ボタンの追加
@@ -100,27 +101,25 @@ var ArticleEditorManager = null;
 
     ArticleEditor.prototype.initialize = function initialize() {
         var ae = this.articleElem;
-        var aaes = ae.getElementsByClassName( "article-uri" );
         var abes = ae.getElementsByClassName( "article-body" );
-        if ( abes.length > 0 && aaes.length > 0 ) {
-            var aae = aaes.item( 0 );
-            var uri = aae.href;
+        if ( abes.length > 0 ) {
+            var uri = this.articleInfo["uri"];
             var abe = abes.item( 0 );
-            var ame = createElem( "div", null, [ [ "className", "article-manager" ] ] );
-            var amfe = ame.appendChild( createElem( "form", null, 
-                            [ [ "method", "GET" ], [ "action", uri + ";edit" ] ] ) );
-            amfe.appendChild( createElem( "input", null, 
-                            [ [ "type", "submit" ], [ "value", "編集" ] ] ) );
+            var ame = this.createEditRequestForm();
             abe.parentNode.insertBefore( ame, abe );
-
-            this.articleElem = ae;
-            ae.__diary_articleEditor = this;
-            amfe.__diary_articleElem = ae;
-            amfe.__diary_articleEditor = this;
-            amfe.addEventListener( "submit", _el_requestEditing, false );
         }
     };
 
+    ArticleEditor.prototype.createEditRequestForm = function createEditRequestForm() {
+        var uri = this.articleInfo["uri"];
+        var e;
+        e = createElem( "input", null , [ [ "type", "submit" ], [ "value", "編集" ] ] );
+        e = createElem( "form" , [ e ], [ [ "method", "GET"  ], [ "action", uri + ";edit" ] ] );
+        e.__diary_articleEditor = this;
+        e.addEventListener( "submit", _el_requestEditing, false );
+        e = createElem( "div"  , [ e ], [ [ "className", "article-manager" ] ] );
+        return e;
+    };
 
     // --------------------
     //  画面変更用メソッド 
@@ -142,25 +141,20 @@ var ArticleEditorManager = null;
         var userName  = this.articleInfo["user_name"];
         var articleId = this.articleInfo["article_id"];
         // TODO : uri encoding
-        var uri       = "/user:" + userName + "/article:" + articleId + ";update";
+        var uri       = "/user:" + userName + "/article:" + articleId
         var body      = articleInfo["body"];
 
         var e = document.createDocumentFragment();
 
         // タイトル
         var createEArticleTitleElem = function createEArticleTitleElem( title, uri ) {
-            var e = createElem( "span", [ title ] );
+            var e = createElem( "a", [ title ], [ [ "href", uri ], [ "className", "article-uri" ] ] );
             return createElem( "h1", [ e ], [ [ "className", "article-title" ] ] );
         };
         e.appendChild( createEArticleTitleElem( title, uri ) );
 
         // TODO 必要なものに変更
-        // フォームマネージャ
-        var createEArticleManagerElem = function createEArticleManagerElem() {
-            var e = createElem( "input", null, [ [ "type", "submit" ], [ "value", "送信" ] ] );
-            return createElem( "div", [ e ], [ [ "className", "article-manager" ] ] );
-        };
-        e.appendChild( createEArticleManagerElem() );
+        e.appendChild( this.createEditRequestForm() );
 
         // 本文
         var createEArticleBodyElem = function createEArticleBodyElem( bodyText ) {
@@ -353,63 +347,6 @@ var ArticleEditorManager = null;
         this.loadLastNormalView();
     };
 
-    /*
-    // req が成功したらこっちに
-    ArticleEditor.prototype.startEditing = function startEditing() {
-        var ae = this.articleElem; // TODO for IE
-
-        // TODO 値の取得
-        var title      = 'tst';
-        var created_on = 'tst';
-        var updated_on = 'test';
-        // update 先 URI
-        var uri        = 'test';
-        var body       = 'テストだよ';
-
-        var e = createElem( "form", null, [ [ "action", uri ], [ "method", "POST" ] ] );
-        e.addEventListener( "submit", _el_startUpdating, false );
-        e.__diary_articleEditor = this;
-        var editableArticleElem
-            = createElem( "article", [ e ], [ [ "className", "article" ] ] );
-
-        // タイトル
-        var createEArticleTitleElem = function createEArticleTitleElem( title, uri ) {
-            var e = createElem( "input", null, [ [ "value", title ], [ "name", "title" ] ] );
-            return createElem( "h1", [ e ], [ [ "className", "article-title" ] ] );
-        };
-        e.appendChild( createEArticleTitleElem( title, uri ) );
-
-        // フォームマネージャ
-        var createEArticleManagerElem = function createEArticleManagerElem() {
-            var e = createElem( "input", null, [ [ "type", "submit" ], [ "value", "送信" ] ] );
-            return createElem( "div", [ e ], [ [ "className", "article-manager" ] ] );
-        };
-        e.appendChild( createEArticleManagerElem() );
-
-        // 本文
-        var createEArticleBodyElem = function createEArticleBodyElem( bodyText ) {
-            var e = createElem( "textarea", [ bodyText ], [ [ "name", "body" ] ] );
-            return createElem( "div", [ e ], [ [ "className", "article-body" ] ] );
-        };
-        e.appendChild( createEArticleBodyElem( body ) );
-
-        // 日時
-        var createEArticleDateElem = function createEArticleDateElem( created_on, updated_on ) {
-            var e1 = createElem( "div", [ created_on ], 
-                                 [ [ "className", "article-date-created_on" ] ] );
-            var e2 = createElem( "div", [ updated_on ], 
-                                 [ [ "className", "article-date-updated_on" ] ] );
-            return createElem( "div", [ e1, e2 ], [ [ "className", "article-date" ] ] );
-        };
-        e.appendChild( createEArticleDateElem( created_on, updated_on ) );
-
-        var pe = ae.parentNode;
-        //alert( ae + " : " + editableArticleElem );
-        pe.insertBefore( editableArticleElem, ae );
-        pe.removeChild( ae );
-    }
-    */
-
     var _el_startUpdating = function _el_startEditing( evt ) {
         var formElem = evt.currentTarget;
         var articleEditor = formElem.parentNode.__diary_articleEditor;
@@ -428,13 +365,6 @@ var ArticleEditorManager = null;
         for ( i = 0; i < len; ++ i ) {
             var e = formElem.elements[i];
             if ( "string" === ( typeof e.name ) && e.name !== "" ) {
-                /* TODO 削除する
-                var pp = params[e.name];
-                if ( "undefined" === typeof pp ) {
-                    pp = params[e.name] = [];
-                }
-                pp.push( e.value );
-                */
                 params.push( { name: e.name, value: e.value } );
             }
         }

@@ -55,3 +55,8 @@ body {
     font-size: 75%;
     text-align: right;
 }
+
+.article textarea {
+    width: 100%;
+    height: 20em;
+}
