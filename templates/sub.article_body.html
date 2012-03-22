@@ -1,7 +1,7 @@
 [%- # 変数 article と r を用いる -%]
         <h1 class="article-title">
           [%- # TODO: user.name や article.id をフィルタに通す -%]
-          <a href="/user:[% user.name %]/article:[% article.id %]">[% article.title | html %]</a>
+          <a class="article-uri article-title" href="/user:[% user.name %]/article:[% article.id %]">[% article.title | html %]</a>
         </h1>
         <div class="article-body">[% r.conv_lf_to_br_tag( r.esc_html( article.body ) ) %]</div>
         <div class="article-date">
