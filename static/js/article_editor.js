@@ -3,35 +3,17 @@
 /**
  * ArticleEditor オブジェクトの管理を行うオブジェクトのコンストラクタ
  */
-var ArticleEditorManager = null;
+var ArticleEditorManager;
 
 (function namespace() {
-    /**
-     * 各記事毎に生成される記事編集用オブジェクトのコンストラクタ
-     */
-    var ArticleEditor = null;
 
-    /**
-     * memo:
-     * ArticleEditor は各 article 要素に結びつけられる
-     * article 要素は表示用のものと編集用のもので別に生成
-     * すなわち, 
-     *   [HTMLElement article (表示用)] <-> [ArticleEditor object] <-> [HTMLElement article (編集用)]
-     * というような関係で参照しあう
-     *
-     * ArticleEditor の仕事
-     *   - 待機状態の表示
-     *   - 編集フォームの表示
-     *   - 閲覧用要素の表示
-     *   - 編集内容の送信
-     *   - 状態遷移機能?
-     *
-     * 状態?
-     *   - 通常表示中
-     *   - 編集表示中
-     *   - 編集表示用データダウンロード中
-     *   - 更新リクエストのレスポンス待機中
-     */
+    // Helper から関数読み込み
+    var createElem   = Helper.createElem;
+    var convertLf2Br = Helper.convertLf2Br;
+
+    //============================
+    // class ArticleEditorManager 
+    //============================
 
     // ArticleEditor のための状態を表す定数
     /** 通常表示中 */
@@ -43,7 +25,10 @@ var ArticleEditorManager = null;
     /** 編集したテキストの送信中 (レスポンス待ち) */
     var ST_SUBMITTING = { name : "submit" };
 
-    ArticleEditor = function ArticleEditor( articleElem ) {
+    /**
+     * 各記事毎に生成される記事編集用オブジェクトのコンストラクタ
+     */
+    var ArticleEditor = function ArticleEditor( articleElem ) {
         if ( "undefined" !== typeof articleElem.__diary_articleEditor ) {
             throw new Error( "already bound to another ArticleEditor object" );
         }
@@ -85,38 +70,35 @@ var ArticleEditorManager = null;
             uri         : elemArticleUri
         };
 
-        // 編集ボタンの追加
-        var elemArticleBody = jQuery( ".article-body", articleElem );
-        if ( elemArticleBody.length !== 1 ) {
-            throw new Error( "invalid article element : " + elemArticleBody.length );
-        }
-        elemArticleBody = elemArticleBody[0];
-        var articleBody = elemArticleBody.text;
-
-        this.initialize();
+        this.insertEditRequestForm();
 
         // 要素にこのオブジェクトを結びつける
         articleElem.__diary_articleEditor = this;
     };
 
-    ArticleEditor.prototype.initialize = function initialize() {
+    // 編集ボタンの追加
+    ArticleEditor.prototype.insertEditRequestForm = function insertEditRequestForm() {
         var ae = this.articleElem;
-        var abes = ae.getElementsByClassName( "article-body" );
+        var abes = jQuery( ".article-body", ae );
+        if ( abes.length !== 1 ) {
+            throw new Error( "invalid article element" );
+        }
         if ( abes.length > 0 ) {
             var uri = this.articleInfo["uri"];
-            var abe = abes.item( 0 );
+            var abe = abes[0];
             var ame = this.createEditRequestForm();
             abe.parentNode.insertBefore( ame, abe );
         }
     };
 
+    // 編集ボタンの生成
     ArticleEditor.prototype.createEditRequestForm = function createEditRequestForm() {
         var uri = this.articleInfo["uri"];
         var e;
         e = createElem( "input", null , [ [ "type", "submit" ], [ "value", "編集" ] ] );
         e = createElem( "form" , [ e ], [ [ "method", "GET"  ], [ "action", uri + ";edit" ] ] );
         e.__diary_articleEditor = this;
-        e.addEventListener( "submit", _el_requestEditing, false );
+        jQuery( e ).submit( _el_requestEditing );
         e = createElem( "div"  , [ e ], [ [ "className", "article-manager" ] ] );
         return e;
     };
@@ -140,7 +122,6 @@ var ArticleEditorManager = null;
         // update 先 URI?
         var userName  = this.articleInfo["user_name"];
         var articleId = this.articleInfo["article_id"];
-        // TODO : uri encoding
         var uri       = "/user:" + userName + "/article:" + articleId
         var body      = articleInfo["body"];
 
@@ -153,7 +134,7 @@ var ArticleEditorManager = null;
         };
         e.appendChild( createEArticleTitleElem( title, uri ) );
 
-        // TODO 必要なものに変更
+        // 「編集」 ボタンとそのフォーム
         e.appendChild( this.createEditRequestForm() );
 
         // 本文
@@ -189,16 +170,14 @@ var ArticleEditorManager = null;
         // update 先 URI?
         var userName  = this.articleInfo["user_name"];
         var articleId = this.articleInfo["article_id"];
-        // TODO : uri encoding
         var uri       = "/user:" + userName + "/article:" + articleId + ";update";
         var body      = articleInfo["body"];
 
         var e = createElem( "form", null, [ [ "action", uri ], [ "method", "POST" ] ] );
-        e.addEventListener( "submit", _el_startUpdating, false );
+        jQuery( e ).submit( _el_startUpdating );
         e.__diary_articleEditor = this;
         var editableArticleElem = document.createDocumentFragment();
         editableArticleElem.appendChild( e );
-            //createElem( "article", [ e ], [ [ "className", "article" ] ] );
 
         // タイトル
         var createEArticleTitleElem = function createEArticleTitleElem( title, uri ) {
@@ -233,7 +212,6 @@ var ArticleEditorManager = null;
 
         var pe = ae.parentNode;
         ae.appendChild( editableArticleElem );
-        //alert( ae + " : " + editableArticleElem );
     };
 
     ArticleEditor.prototype.showWaitingViewForRawDataRequest = 
@@ -302,7 +280,7 @@ var ArticleEditorManager = null;
     var _el_requestEditing = function _el_requestEditing( evt ) {
         var editor = evt.currentTarget.__diary_articleEditor;
         editor.requestEditing();
-        evt.preventDefault(); // TODO for IE
+        evt.preventDefault();
     };
 
     ArticleEditor.prototype.requestEditing = function requestEditing() {
@@ -314,18 +292,17 @@ var ArticleEditorManager = null;
         this.showWaitingViewForRawDataRequest();
         // XMLHttpRequest を投げる
         jQuery.ajax({
-            // TODO : URI のエンコーディング
             url     : "/api/article.json?user_name=" + userName + "&article_id=" + articleId,
             context : this,
-            success : _el_success_requestEditing, //function ( data, dataType ) { },
-            error   : _el_fail_requestEditing // function ( req, textStatus, errorThrown ) {}
+            success : _el_success_requestEditing,
+            error   : _el_fail_requestEditing
         });
     };
 
     /** 編集内容のリクエストに成功した場合
      * this をコンテキストにして呼び出される
      */
-    var _el_success_requestEditing = function _el_success_requestEditing( data, dataType ) {
+    var _el_success_requestEditing = function _el_success_requestEditing( data, textStat, req ) {
         // 状態遷移
         this.currentStatus = ST_EDITING;
         this.showEditView( data );
@@ -335,10 +312,7 @@ var ArticleEditorManager = null;
      * 編集内容のリクエストに失敗した場合
      * this をコンテキストにして呼び出される
      */
-    var _el_fail_requestEditing = function _el_fail_requestEditing( req, textStatus, errorThrown ) {
-        // alert を表示
-        // TODO : もっと詳しいエラー情報の表示 (HTTP ステータスコードとか)
-        //alert( this.constructor + " : " + req.status + " : " + textStatus );
+    var _el_fail_requestEditing = function _el_fail_requestEditing( req, textStat, errorThrown ) {
         alert( "編集用データの取得に失敗しました\n" +
                "  status code   : " + req.status +
                "  response text : " + req.responseText + ")" );
@@ -347,11 +321,11 @@ var ArticleEditorManager = null;
         this.loadLastNormalView();
     };
 
-    var _el_startUpdating = function _el_startEditing( evt ) {
+    var _el_startUpdating = function _el_startUpdating( evt ) {
         var formElem = evt.currentTarget;
         var articleEditor = formElem.parentNode.__diary_articleEditor;
         articleEditor.startUpdating( formElem );
-        evt.preventDefault(); // TODO for IE
+        evt.preventDefault();
     };
 
     ArticleEditor.prototype.startUpdating = function startUpdating( formElem ) {
@@ -370,12 +344,11 @@ var ArticleEditorManager = null;
         }
         jQuery.ajax({
             type    : "POST",
-            // TODO : URI のエンコーディング
             url     : "/api/article.json;update?user_name=" + userName + "&article_id=" + articleId,
             data    : params,
             context : this,
-            success : _el_success_submitting,
-            error   : _el_fail_submitting
+            success : _el_success_updating,
+            error   : _el_fail_updating
         });
 
         // 状態遷移
@@ -384,13 +357,13 @@ var ArticleEditorManager = null;
         this.showWaitingViewForSubmit(); 
     }
 
-    var _el_success_submitting = function _el_success_submitting( data, dataType ) {
+    var _el_success_updating = function _el_success_updating( data, textStat, req ) {
         // 状態遷移
         this.currentState = ST_SHOWING;
         this.showNormalView( data );
     };
 
-    var _el_fail_submitting = function _el_fail_submitting( req, textStatus, errorThrown ) {
+    var _el_fail_updating = function _el_fail_updating( req, textStat, errorThrown ) {
         alert( "更新に失敗しました\n" +
                "  " + req.responseText );
 
@@ -400,18 +373,17 @@ var ArticleEditorManager = null;
     };
 
 
+    //============================
+    // class ArticleEditorManager 
+    //============================
+
     ArticleEditorManager = function ArticleEditorManager() {
         this._articleEditors = [];
     };
     ArticleEditorManager.prototype.initialize = function initialize() {
-        // TODO for IE
-        var articleElems = document.getElementsByClassName( "article" );
-        var i;
-        var len = articleElems.length;
-        for ( i = 0; i < len; ++ i ) {
-            var e  = articleElems[i];
-            var ae = new ArticleEditor( e );
-            this._articleEditors.push( ae );
-        }
+        var ee = this._articleEditors;
+        jQuery( ".article", document ).each( function tmp( idx, e ) {
+            ee.push( new ArticleEditor( e ) );
+        } );
     };
 })();

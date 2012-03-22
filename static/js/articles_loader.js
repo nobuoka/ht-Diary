@@ -6,6 +6,13 @@ var ArticlesLoader = {
 
     // とりあえずは再利用など考えず, /user:{user_name}/articles ページのみで使うつもりで
     // 書いていく
+    //
+    // 将来的に変更の必要:
+    // user_name, article_id は URI に含める際に
+    // パーセントエンコードしないでよい文字のみで構成されるので, エンコードはしていない
+
+    var createElem   = Helper.createElem;
+    var convertLf2Br = Helper.convertLf2Br;
 
     /** 記事リストを表す ul 要素 */
     var article_list_elem = null;
@@ -18,13 +25,15 @@ var ArticlesLoader = {
         // リスト要素の取得
         articleListElem = document.getElementById( 'article-list' );
 
-        // TODO 次ページの記事取得ボタン
+        // 次ページの記事取得ボタン
         var getterFormElem = document.createElement( 'form' );
         var userName = ArticlesLoader.conf['user_name'];
-        // TODO userName が undefined の場合, 例外送出
-        // TODO userName をエンコード (URI の中に入れられるように)
+        if ( "undefined" === typeof userName ) {
+            throw new Error( "user_name not specified" );
+        }
+
         getterFormElem.action = "/user:" + userName + "/articles";
-        getterFormElem.addEventListener( "submit", obtainNextArticles, false );
+        jQuery( getterFormElem ).submit( obtainNextArticles );
         var e = getterFormElem.appendChild( document.createElement( "input" ) );
         e.type  = "submit";
         e.value = "続きを読み込み";
@@ -39,62 +48,56 @@ var ArticlesLoader = {
             e.disabled = true;
         }
 
-        // ページャーの取得 (最後に削除する); TODO for IE
-        pagerElems = document.getElementsByClassName( 'pager' );
-        var i;
-        for ( i = pagerElems.length - 1; 0 <= i; -- i ) {
-            var e = pagerElems.item( i );
+        // ページャー削除
+        jQuery( ".pager", document ).each( function callback( idx, e ) {
             e.parentNode.removeChild( e );
-        }
+        } );
     };
 
     /**
      * 次のページの記事を取得する
      */
-    var obtainNextArticles = function( evt ) {
-        evt.preventDefault(); // TODO for IE
+    var obtainNextArticles = function obtainNextArticles( evt ) {
+        evt.preventDefault();
 
         getterButtonElem.disabled = true;
-        var encdUserName = ArticlesLoader.conf['user_name'   ]; // TODO エンコード
-        var page         = ArticlesLoader.conf['cur_page_num'] + 1; // TODO ページ番号インクリメント
+        var encdUserName = ArticlesLoader.conf['user_name'   ];
+        var page         = ArticlesLoader.conf['cur_page_num'] + 1;
         var numPerPage   = ArticlesLoader.conf['num_per_page'];
 
         // リクエスト先 URI
-        var api_uri = "/api/articles.json?" + "user_name="     + encdUserName +
+        var apiUri = "/api/articles.json?" + "user_name="     + encdUserName +
                                               "&page="         + page         +
                                               "&num_per_page=" + numPerPage   ;
-        // TODO for IE
-        var req = new XMLHttpRequest();
-        req.open( "GET", api_uri, true );
-        req.onreadystatechange = function onreadystatechange( evt ) {
-            // TODO 例外補足
-            if ( req.readyState == 4 ) {
-                if ( req.status == 200 ) {
-                    reqCallbackSuccess( req, page );
-                } else {
-                    // TODO 失敗
-                    alert( "失敗: " + req.responseText );
-                }
+        // XMLHttpRequest を投げる
+        jQuery.ajax({
+            url     : apiUri,
+            context : this,
+            success : function onSuccess( data, textStat, req ) {
+                reqCallbackSuccess( req, page )
+            },
+            error   : function onError( req, textStat, errorThrown ) {
+                alert( "読み込み失敗 : " + req.responseText )
+            },
+            complete: function onComplete( req, textStat ) {
                 if ( ArticlesLoader.conf['cur_page_num'] < ArticlesLoader.conf['num_pages'] ) {
                     getterButtonElem.disabled = false;
                 } else {
                     getterButtonElem.value = "続きはありません";
                 }
             }
-        };
-        req.send();
-
+        });
     };
 
+    // 記事を表すための HTML 構築は別のところにまとめるべき
     var reqCallbackSuccess = function reqCallbackSuccess( req, page ) {
-        // TODO 例外補足
+        // 例外補足すべきか
         var json = JSON.parse( req.responseText );
         // HTML に反映
         var i;
         var len = json.length;
         if ( len == 0 ) {
             alert( "これ以上の記事はありませんでした." );
-            // TODO これ以上記事がないなら, ボタンを "すべての記事が表示されています" にする
         }
         for ( i = 0; i < len; ++ i ) {
             var title      = json[i]['title'     ];

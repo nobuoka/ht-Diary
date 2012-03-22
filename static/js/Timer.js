@@ -1,7 +1,7 @@
 /**
  * タイマーを管理するタイマークラス
  */
-var Timer = null;
+var Timer;
 
 (function namespace() {
     /**
