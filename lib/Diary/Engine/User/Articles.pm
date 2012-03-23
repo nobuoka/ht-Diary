@@ -51,10 +51,12 @@ sub _get {
         $r->res->code( '404' );
     }
     $r->stash->param(
+        page_specified   => ( defined $requested_page ),
         user             => $user,
         articles_on_page => $articles,
         num_articles     => $num_articles,
         num_pages        => int( ( $num_articles - 1 ) / $NUM_ITEM_PER_PAGE + 1 ),
+        num_per_page     => $NUM_ITEM_PER_PAGE,
         cur_page         => $page,
     );
 }

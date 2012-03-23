@@ -23,18 +23,23 @@ sub startup : Test(startup => 1) {
 }
 
 # URI のパス部品 (スラッシュで区切られた部分) を処理する関数のテスト
-sub path_component_filter : Test(4) {
+sub path_component_filter : Test(8) {
     my $self = shift;
 
     my %path_components = (
         # 単純な値
-        'article'              => [ 'article', undef, undef    ],
+        'article'                => [ 'article', undef, undef   , undef ],
         # パス中にパラメータを含む
-        'article%3A232'        => [ 'article', '232', undef    ],
+        'article%3A232'          => [ 'article', '232', undef   , undef ],
         # パス中にコマンドを含む
-        'article%3Bdelete'       => [ 'article', undef, 'delete' ],
+        'article%3Bdelete'       => [ 'article', undef, 'delete', undef ],
         # パス中にパラメータもコマンドも含む
-        'article%3A232%3Bdelete' => [ 'article', '232', 'delete' ],
+        'article%3A232%3Bdelete' => [ 'article', '232', 'delete', undef ],
+        # 以下 ext を含む
+        'article.txt'                => [ 'article', undef, undef   , 'txt' ],
+        'article%3A232.txt'          => [ 'article', '232', undef   , 'txt' ],
+        'article.txt%3Bdelete'       => [ 'article', undef, 'delete', 'txt' ],
+        'article%3A232.txt%3Bdelete' => [ 'article', '232', 'delete', 'txt' ],
     );
 
     # articles は空

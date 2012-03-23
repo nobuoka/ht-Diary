@@ -43,13 +43,15 @@ sub uri_filter {
     my @comps = split( m{/}, $path, -1 );
     my @new_comps = ();
     foreach my $comp ( @comps ) {
-        my ( $b, $i, $c ) = _path_component_filter( $comp );
+        my ( $b, $i, $c, $e ) = _path_component_filter( $comp );
         if ( my $k = $path_param_name{$b} ) {
             $uri->param( $k, $i );
         } else {
             # TODO: 不明なパラメータ
         }
-        push @new_comps, ( defined $c ) ? ( $b . '.' . $c ) : $b;
+        $b = $b . '.' . $c if ( defined $c );
+        $b = $b . '.' . $e if ( defined $e );
+        push @new_comps, $b;
     }
     $uri->path( join '/', @new_comps );
     return $uri;
@@ -57,7 +59,7 @@ sub uri_filter {
 
 ###
 # path の構成要素 (スラッシュで囲まれた部分) を, 
-# base:id;cmd 形式で認識して ( base, id, cmd ) のリストで返す
+# base:id;cmd 形式で認識して ( base, id, cmd, ext ) のリストで返す
 # id 部, cmd 部は, 存在しない場合は undef になる
 sub _path_component_filter {
     my ( $path_component ) = @_;
@@ -66,9 +68,16 @@ sub _path_component_filter {
 
     # セミコロン (; - \x3B) で区切られた部分を取り出す
     my ( $t   , $cmd ) = split /%3B/, $path_component, 2;
+    # ピリオド (.) で区切られた部分を取り出す
+    my $idx = rindex( $t, '.' );
+    my ( $bb, $ext );
+    if ( $idx != -1 ) {
+        $ext = substr( $t, $idx + 1, ( length $t ) - $idx - 1 );
+        $t   = substr( $t, 0, $idx );
+    }
     # コロン (: - \x3A) で区切られた部分を取り出す
     my ( $base, $id  ) = split /%3A/, $t, 2;
-    return ( $base, $id, $cmd );
+    return ( $base, $id, $cmd, $ext );
 }
 
 1;
