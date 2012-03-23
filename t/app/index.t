@@ -13,18 +13,19 @@ use lib '.', 'lib', 'modules/Ridge/lib';
 use t::Diary;
 use Test::More qw/no_plan/;
 use HTTP::Status;
-use Ridge::Test 'Diary';
+#use Ridge::Test 'Diary';
+use t::app::RidgeTest;
 
 ###
 # このテスト全体の初期化
-sub startup : Test(startup => 0) {
+sub startup : Test(startup) {
     my $self = shift;
     #use_ok 'Diary::MoCo::User';
     #use_ok 'Diary::MoCo::Article';
     #t::Diary->truncate_db;
 }
 
-sub setup : Test(setup => 0 ) {
+sub setup : Test(setup) {
     my $self = shift;
     # ユーザー作成
     #ok 
