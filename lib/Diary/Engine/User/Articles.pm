@@ -64,17 +64,25 @@ sub _get {
 sub _post{
     my ( $self, $r ) = @_;
 
+    # ログインユーザー
+    my $auth_user = $r->user;
+    if ( ! defined $auth_user ) {
+        $r->res->code( '401' );
+        $r->res->content( '401 Unauthorized' );
+        return;
+    }
+
     # パラメータの取得と確認
     my $title = $r->req->param('title');
     my $body  = $r->req->param('body' );
     if ( ! defined $title ) {
-        # TODO: 例外
+        # 例外
         $r->res->code( '400' );
         $r->res->content( '400 BAD REQUEST : no title' );
         return;
     }
     if ( ! defined $body ) {
-        # TODO: 例外
+        # 例外
         $r->res->code( '400' );
         $r->res->content( '400 BAD REQUEST : no body' );
         return;
@@ -84,6 +92,11 @@ sub _post{
         # 例外
         $r->res->code( '404' );
         $r->res->content( '404 NOT FOUND : user_name undefined' );
+        return;
+    }
+    if ( $user_name ne $auth_user->name ) {
+        $r->res->code( '403' );
+        $r->res->content( '403 FORBIDDEN' );
         return;
     }
 
@@ -98,6 +111,7 @@ sub _post{
 
     my $article = $user->create_article( $title, $body );
     $r->res->redirect( '/user:' . $user_name . '/article:' . $article->id );
+    $r->res->code( '303' );
     #print '[SUCCESS] wrote new article (id: ', $article->id, ') : ', $article->title, "\n";
     #$r->res->content_type('text/plain');
     #$r->res->content('Welcome to the Ridge world!');
