@@ -14,7 +14,7 @@ __PACKAGE__->utf8_columns( 'body' );
 sub user {
     my $self = shift;
     return Diary::MoCo::User->find(
-        where => { user_id => $self->user_id },
+        id => $self->user_id,
     );
 }
 

@@ -27,7 +27,7 @@ sub startup : Test(startup => 3) {
 }
 
 # 記事編集のテスト
-sub edit_article2 : Test(6) {
+sub edit_article2 : Test(9) {
     my $self = shift;
     my $user = $self->{'user'};
 
@@ -52,6 +52,7 @@ sub edit_article2 : Test(6) {
         $article->edit( $new_title, $new_body ); 
         is $article->title, ( defined $new_title ? $new_title : $title );
         is $article->body,  $new_body;
+        is $article->user->id, $user->id;
     }
 
 }
