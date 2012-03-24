@@ -53,4 +53,37 @@ var Helper = {};
         }
         return ee;
     };
+
+    /**
+     * リスナの配列の中から, 指定の関数があるか探し, あればその要素を削除する
+     * 要素を削除した場合, その要素を返す. 削除しなかった場合, null を返す
+     */
+    Helper.removeCallbackFunc = function removeCallbackFunc( ls, func ) {
+        var i;
+        var len = ls.length;
+        for ( i = 0; i < len; ++ i ) {
+            if ( ls[i] === func ) {
+                break;
+            }
+        }
+        // 見つかった場合は削除
+        var e = null;
+        if ( i < len ) {
+            e = ls.splice( i, 1 )[0];
+        }
+        return e;
+    };
+
+    Helper.execEventListeners = function execEventListeners( ls ) {
+        var i = ls.length;
+        while ( i ) {
+            -- i;
+            try {
+                ls[i]();
+            } catch ( err ) {
+                // リスナ内でエラーが発生しても, 別のリスナが実行されるように例外補足
+                // do nothing
+            }
+        }
+    };
 })();

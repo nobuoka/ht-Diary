@@ -8,27 +8,19 @@
       [% INCLUDE 'sub.pager.html' %]
 
       [% IF articles_on_page.length() != 0 %]
-      [%- #<ul id="article-list"> -%]
       <div id="article-list">
-        [% FOREACH article IN articles_on_page %]
-        <!--
-        <li><a href="/user:[% user.name | uri %]/article:[% article.id | uri %]"
-          >[% article.title | html %]
-          <span class="time-created_on">([% article.created_on.strftime('%Y-%m-%d %H:%M') | html %])</span></a></li>
-        -->
+        [%- FOREACH article IN articles_on_page -%]
 
         <article class="article">
 
         [%- INCLUDE sub.article_body.html 
                 r       = r      ,
                 article = article,
-         %]
-
+         -%]
         </article>
 
-        [% END %]
+        [%- END -%]
       </div>
-      [%- #</ul> -%]
       [% ELSE %]
       <p>記事はありません</p>
       [% END %]
@@ -42,17 +34,26 @@
     [%- IF not page_specified -%]
     <script type="text/javascript" src="/js/articles_loader.js"></script>
     <script type="text/javascript">
-      ArticlesLoader.conf['user_name'   ] = "[% user.name    %]"; // '<' のエンコード
-      ArticlesLoader.conf['num_per_page'] = [% num_per_page %]; // '<' のエンコード
-      ArticlesLoader.conf['num_pages'   ] = [% num_pages    %]; // '<' のエンコード
-      ArticlesLoader.conf['cur_page_num'] = [% cur_page     %]; // '<' のエンコード
-      ArticlesLoader.initialize();
+      // とりあえず現状エスケープする必要はないが, 将来的に注意が必要
+      ArticlesLoader.conf['user_name'   ] = "[% user.name    %]";
+      ArticlesLoader.conf['num_per_page'] = [% num_per_page %];
+      ArticlesLoader.conf['num_pages'   ] = [% num_pages    %];
+      ArticlesLoader.conf['cur_page_num'] = [% cur_page     %];
+      jQuery( function onLoad() {
+          ArticlesLoader.initialize();
+      } );
     </script>
     [%- END -%]
-    [%- # TODO: ログインしていない場合はその場編集機能が使われないようにする -%]
+    [%- IF r.user.id and r.user.id == user.id -%]
     <script type="text/javascript" src="/js/article_editor.js"></script>
     <script type="text/javascript">
-      var aem = new ArticleEditorManager();
-      aem.initialize();
+      jQuery( function onLoad() {
+          var manager = new ArticleEditorManager();
+          manager.initialize();
+          ArticlesLoader.addEventListenerForLoadArticles( function onLoadArticles() {
+              manager.update();
+          } );
+      } );
     </script>
+    [%- END -%]
 [% END %]

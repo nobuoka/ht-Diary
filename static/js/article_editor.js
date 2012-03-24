@@ -377,13 +377,23 @@ var ArticleEditorManager;
     // class ArticleEditorManager 
     //============================
 
-    ArticleEditorManager = function ArticleEditorManager() {
+    ArticleEditorManager = function ArticleEditorManager( selector ) {
+        if ( "undefined" === typeof selector ) selector = ".article";
         this._articleEditors = [];
+        this._targetSelector = selector;
     };
     ArticleEditorManager.prototype.initialize = function initialize() {
         var ee = this._articleEditors;
-        jQuery( ".article", document ).each( function tmp( idx, e ) {
+        jQuery( this._targetSelector, document ).each( function tmp( idx, e ) {
             ee.push( new ArticleEditor( e ) );
+        } );
+    };
+    ArticleEditorManager.prototype.update = function update() {
+        var ee = this._articleEditors;
+        jQuery( this._targetSelector, document ).each( function tmp( idx, e ) {
+            if ( "undefined" === typeof e.__diary_articleEditor ) {
+                ee.push( new ArticleEditor( e ) );
+            }
         } );
     };
 })();

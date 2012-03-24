@@ -18,12 +18,16 @@ var ArticlesLoader = {
     var article_list_elem = null;
     var getterButtonElem  = null;
 
+    var _removeCallbackFunc = Helper.removeCallbackFunc;
+    var _execEventListeners = Helper.execEventListeners;
+
     /**
      * ページに読み込みボタンを追加するなど, 初期処理を行う
      */
     ArticlesLoader.initialize = function initialize() {
         // リスト要素の取得
         articleListElem = document.getElementById( 'article-list' );
+        this._listenersForLoadArticles = [];
 
         // 次ページの記事取得ボタン
         var getterFormElem = document.createElement( 'form' );
@@ -52,6 +56,28 @@ var ArticlesLoader = {
         jQuery( ".pager", document ).each( function callback( idx, e ) {
             e.parentNode.removeChild( e );
         } );
+    };
+
+    /**
+     * タイマー終了時に呼び出されるリスナを追加する
+     * 後で登録されたものが, タイマー終了時に先に呼び出される.
+     * 既に登録したものを再度登録しようとした場合, 先のものは削除され, 
+     * 後のものが登録される. (すなわち呼び出し順が変更される)
+     */
+    ArticlesLoader.addEventListenerForLoadArticles = function addEventListenerForLoadArticles( el ) {
+        var ls = this._listenersForLoadArticles;
+        // 多重登録しないように, 削除
+        _removeCallbackFunc( ls, el );
+        ls.push( el );
+    };
+
+    /**
+     * タイマー終了時に呼び出されるリスナを削除する
+     */
+    ArticlesLoader.removeEventListenerForLoadArticles =
+    function removeEventListenerForLoadArticles( el ) {
+        var ls = this._listenersForLoadArticles;
+        return ( _removeCallbackFunc( ls, callback ) !== null );
     };
 
     /**
@@ -113,7 +139,8 @@ var ArticlesLoader = {
             // タイトル
             var e  = articleElem.appendChild(
                     createElem( "h1", null , [ [ "className", "article-title" ] ] ) );
-            e.appendChild( createElem( "a" , [ title ], [ [ "href", uri ] ]  ) );
+            e.appendChild( createElem( "a" , [ title ],
+                        [ [ "href", uri ], [ "className", "article-uri" ] ]  ) );
 
             // 本文
             var createArticleBodyElem = function createArticleBodyElem( bodyText ) {
@@ -136,6 +163,9 @@ var ArticlesLoader = {
             articleListElem.appendChild( articleElem );
         }
         ArticlesLoader.conf['cur_page_num'] = page;
+
+        // イベントリスナを実行
+        _execEventListeners( ArticlesLoader._listenersForLoadArticles );
     }
 
 })();

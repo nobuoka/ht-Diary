@@ -4,6 +4,10 @@
 var Timer;
 
 (function namespace() {
+
+    // Helper が必要
+    var _removeCallbackFunc = Helper.removeCallbackFunc;
+
     /**
      * コンストラクタ
      * @arg time タイマーの時間: 単位は ms
@@ -34,7 +38,7 @@ var Timer;
         var ls = this.listeners;
         // 多重登録しないように, 削除
         _removeCallbackFunc( ls, callback );
-        this.listeners.push( callback );
+        ls.push( callback );
     };
 
     /**
@@ -43,26 +47,6 @@ var Timer;
     Timer.prototype.removeListener = function removeListener( callback ) {
         var ls = this.listeners;
         return ( _removeCallbackFunc( ls, callback ) !== null );
-    };
-
-    /**
-     * リスナの配列の中から, 指定の関数があるか探し, あればその要素を削除する
-     * 要素を削除した場合, その要素を返す. 削除しなかった場合, null を返す
-     */
-    var _removeCallbackFunc = function _removeCallbackFunc( ls, func ) {
-        var i;
-        var len = ls.length;
-        for ( i = 0; i < len; ++ i ) {
-            if ( ls[i] === func ) {
-                break;
-            }
-        }
-        // 見つかった場合は削除
-        var e = null;
-        if ( i < len ) {
-            e = ls.splice( i, 1 )[0];
-        }
-        return e;
     };
 
     /**
@@ -102,17 +86,6 @@ var Timer;
         timer.remTime   = null;
         timer.timerId   = null;
         timer.startTime = null;
-        // 後で登録されたものを先に呼び出す
-        var ls  = timer.listeners;
-        var i = ls.length;
-        while ( i ) {
-            -- i;
-            try {
-                ls[i]();
-            } catch ( err ) {
-                // リスナ内でエラーが発生しても, 別のリスナが実行されるように例外補足
-                // do nothing
-            }
-        }
+        _execEventListeners( timer.listeners );
     };
 })();
