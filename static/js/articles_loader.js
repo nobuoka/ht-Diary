@@ -59,10 +59,7 @@ var ArticlesLoader = {
     };
 
     /**
-     * タイマー終了時に呼び出されるリスナを追加する
-     * 後で登録されたものが, タイマー終了時に先に呼び出される.
-     * 既に登録したものを再度登録しようとした場合, 先のものは削除され, 
-     * 後のものが登録される. (すなわち呼び出し順が変更される)
+     * 記事読み込み後に実行される関数を登録する
      */
     ArticlesLoader.addEventListenerForLoadArticles = function addEventListenerForLoadArticles( el ) {
         var ls = this._listenersForLoadArticles;
@@ -72,7 +69,7 @@ var ArticlesLoader = {
     };
 
     /**
-     * タイマー終了時に呼び出されるリスナを削除する
+     * 記事読み込み後に実行される関数を削除する
      */
     ArticlesLoader.removeEventListenerForLoadArticles =
     function removeEventListenerForLoadArticles( el ) {
@@ -115,6 +112,7 @@ var ArticlesLoader = {
         });
     };
 
+    var createArticleChildNodesFromJson = Helper.createArticleChildNodesFromJson;
     // 記事を表すための HTML 構築は別のところにまとめるべき
     var reqCallbackSuccess = function reqCallbackSuccess( req, page ) {
         // 例外補足すべきか
@@ -126,40 +124,8 @@ var ArticlesLoader = {
             alert( "これ以上の記事はありませんでした." );
         }
         for ( i = 0; i < len; ++ i ) {
-            var title      = json[i]['title'     ];
-            // TODO 日時の書式
-            var created_on = json[i]['created_on'];
-            var updated_on = json[i]['updated_on'];
-            var uri        = json[i]['uri'       ];
-            var body       = json[i]['body'      ];
-
-            var articleElem
-                = createElem( "article", null, [ [ "className", "article" ] ] );
-
-            // タイトル
-            var e  = articleElem.appendChild(
-                    createElem( "h1", null , [ [ "className", "article-title" ] ] ) );
-            e.appendChild( createElem( "a" , [ title ],
-                        [ [ "href", uri ], [ "className", "article-uri" ] ]  ) );
-
-            // 本文
-            var createArticleBodyElem = function createArticleBodyElem( bodyText ) {
-                return createElem( "div", convertLf2Br( bodyText ), 
-                                   [ [ "className", "article-body" ] ] );
-            };
-            articleElem.appendChild( createArticleBodyElem( body ) );
-
-            // 日時
-            var createArticleDateElem = function createArticleDateElem( created_on, updated_on ) {
-                var e = createElem( "div", null, [ [ "className", "article-date" ] ] );
-                e.appendChild( createElem( "div", [ created_on ],
-                            [ [ "className", "article-date-created_on" ] ] ) );
-                e.appendChild( createElem( "div", [ updated_on ],
-                            [ [ "className", "article-date-updated_on" ] ] ) );
-                return e;
-            };
-            articleElem.appendChild( createArticleDateElem( created_on, updated_on ) );
-
+            var articleElem = createElem( "article",
+                    [ createArticleChildNodesFromJson( json[i] ) ], [ [ "className", "article" ] ] );
             articleListElem.appendChild( articleElem );
         }
         ArticlesLoader.conf['cur_page_num'] = page;

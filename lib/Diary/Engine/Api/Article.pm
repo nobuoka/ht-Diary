@@ -15,7 +15,7 @@ sub default : Public {
 sub _get {
     my ( $self, $r ) = @_;
 
-    # Diary::Engine::Articles と共通のチェックがあるので, モジュールにまとめるべき
+    # Diary::Engine::Articles と共通のチェックがあるので, どこかににまとめるべき
 
     # パラメータの取得と確認
     my $user_name = $r->req->param('user_name');
@@ -54,14 +54,7 @@ sub _get {
     # とりあえず json のみ
     if ( $r->req->uri->view eq 'json' ) {
         $r->res->content_type( 'text/json' );
-        my $h = $article->to_hash;
-        # 日時は ISO 8601 形式の文字列 (UTC)
-        $h->{'created_on'} = $h->{'created_on'}->set_time_zone( '+0000' )->strftime('%FT%TZ');
-        $h->{'updated_on'} = $h->{'updated_on'}->set_time_zone( '+0000' )->strftime('%FT%TZ');
-        $h->{'uri'       } = '/user:' . $user_name . '/article:' . $h->{'id'};
-
-        $r->res->content( JSON::XS::encode_json( $h )  );
-        #$r->res->content( JSON::XS::encode_json([ map { $_->to_hash } $articles->to_a ])  );
+        $r->res->content( _article_to_json( $article ) );
     } else {
         $r->res->code( '404' );
     }
@@ -142,14 +135,7 @@ sub _update_post {
     # とりあえず json のみ
     if ( $r->req->uri->view eq 'json' ) {
         $r->res->content_type( 'text/json' );
-        my $h = $article->to_hash;
-        # 日時は ISO 8601 形式の文字列 (UTC)
-        $h->{'created_on'} = $h->{'created_on'}->set_time_zone( '+0000' )->strftime('%FT%TZ');
-        $h->{'updated_on'} = $h->{'updated_on'}->set_time_zone( '+0000' )->strftime('%FT%TZ');
-        $h->{'uri'       } = '/user:' . $user_name . '/article:' . $h->{'id'};
-
-        $r->res->content( JSON::XS::encode_json( $h )  );
-        #$r->res->content( JSON::XS::encode_json([ map { $_->to_hash } $articles->to_a ])  );
+        $r->res->content( _article_to_json( $article )  );
     } else {
         $r->res->code( '404' );
     }
@@ -158,5 +144,24 @@ sub _update_post {
 # XXX Ridge アクションが空で view が指定されたとき, action が view と一致するので
 # エイリアスを張る (/api/articles.json へのアクセス時に, action が json になってしまう)
 *_json_get = \&_get;
+
+sub _article_to_json {
+    my ( $article ) = @_;
+    my $h = _article_to_hash( $article );
+    return JSON::XS::encode_json( $h );
+}
+
+sub _article_to_hash {
+    my ( $article ) = @_;
+    my $user_name = $article->user->name;
+    my $h = $article->to_hash;
+    # 日時は ISO 8601 形式の文字列 (UTC)
+    $h->{'created_on'} = $h->{'created_on'}->set_time_zone( '+0000' )->strftime('%FT%TZ');
+    $h->{'updated_on'} = $h->{'updated_on'}->set_time_zone( '+0000' )->strftime('%FT%TZ');
+    $h->{'created_on_epoch'} = $article->created_on->epoch;
+    $h->{'updated_on_epoch'} = $article->updated_on->epoch;
+    $h->{'uri'       } = '/user:' . $user_name . '/article:' . $h->{'id'};
+    return $h;
+}
 
 1;

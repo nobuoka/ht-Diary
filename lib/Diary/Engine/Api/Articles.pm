@@ -7,6 +7,8 @@ use JSON::XS;
 use Diary::Engine -Base;
 use Diary::MoCo::User;
 
+use Diary::Engine::Api::Article;
+
 ## 設定
 
 # 1 ページあたりの記事数
@@ -64,16 +66,7 @@ sub _get {
     # とりあえず json のみ
     if ( $r->req->uri->view eq 'json' ) {
         $r->res->content_type( 'text/json' );
-        my @hash_articles = map {
-            my $h = $_->to_hash;
-            # 日時は ISO 8601 形式の文字列 (UTC)
-            $h->{'created_on'} = $h->{'created_on'}->set_time_zone( '+0000' )->strftime('%FT%TZ');
-            $h->{'updated_on'} = $h->{'updated_on'}->set_time_zone( '+0000' )->strftime('%FT%TZ');
-            $h->{'uri'       } = '/user:' . $user_name . '/article:' . $h->{'id'};
-            $h;
-        } @{$articles->to_a};
-        $r->res->content( JSON::XS::encode_json([ @hash_articles ])  );
-        #$r->res->content( JSON::XS::encode_json([ map { $_->to_hash } $articles->to_a ])  );
+        $r->res->content( _articles_to_json( $articles ) );
     } else {
         $r->res->code( '404' );
     }
@@ -82,5 +75,13 @@ sub _get {
 # XXX Ridge アクションが空で view が指定されたとき, action が view と一致するので
 # エイリアスを張る (/api/articles.json へのアクセス時に, action が json になってしまう)
 *_json_get = \&_get;
+
+sub _articles_to_json {
+    my ( $articles ) = @_;
+    my @hash_articles = map {
+        Diary::Engine::Api::Article::_article_to_hash( $_ );
+    } @{$articles->to_a};
+    return JSON::XS::encode_json([ @hash_articles ]);
+}
 
 1;

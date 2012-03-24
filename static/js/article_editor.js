@@ -10,6 +10,7 @@ var ArticleEditorManager;
     // Helper から関数読み込み
     var createElem   = Helper.createElem;
     var convertLf2Br = Helper.convertLf2Br;
+    var createArticleChildNodesFromJson = Helper.createArticleChildNodesFromJson;
 
     //============================
     // class ArticleEditorManager 
@@ -116,45 +117,10 @@ var ArticleEditorManager;
     ArticleEditor.prototype.showNormalView = function showNormalView( articleInfo ) {
         var articleElem = this.articleElem;
 
-        var title     = articleInfo["title"];
-        var createdOn = articleInfo["created_on"];
-        var updatedOn = articleInfo["updated_on"];
-        // update 先 URI?
-        var userName  = this.articleInfo["user_name"];
-        var articleId = this.articleInfo["article_id"];
-        var uri       = "/user:" + userName + "/article:" + articleId
-        var body      = articleInfo["body"];
-
-        var e = document.createDocumentFragment();
-
-        // タイトル
-        var createEArticleTitleElem = function createEArticleTitleElem( title, uri ) {
-            var e = createElem( "a", [ title ], [ [ "href", uri ], [ "className", "article-uri" ] ] );
-            return createElem( "h1", [ e ], [ [ "className", "article-title" ] ] );
-        };
-        e.appendChild( createEArticleTitleElem( title, uri ) );
-
-        // 「編集」 ボタンとそのフォーム
-        e.appendChild( this.createEditRequestForm() );
-
-        // 本文
-        var createEArticleBodyElem = function createEArticleBodyElem( bodyText ) {
-            return createElem( "div", convertLf2Br( bodyText ), [ [ "className", "article-body" ] ] );
-        };
-        e.appendChild( createEArticleBodyElem( body ) );
-
-        // 日時
-        var createEArticleDateElem = function createEArticleDateElem( createdOn, updatedOn ) {
-            var e1 = createElem( "div", [ createdOn ], 
-                                 [ [ "className", "article-date-created_on" ] ] );
-            var e2 = createElem( "div", [ updatedOn ], 
-                                 [ [ "className", "article-date-updated_on" ] ] );
-            return createElem( "div", [ e1, e2 ], [ [ "className", "article-date" ] ] );
-        };
-        e.appendChild( createEArticleDateElem( createdOn, updatedOn ) );
-
+        var e = createArticleChildNodesFromJson( articleInfo );
         removeAllChildNodes( articleElem );
         articleElem.appendChild( e );
+        this.insertEditRequestForm();
     };
 
     ArticleEditor.prototype.showEditView = function showEditView( articleInfo ) {
@@ -165,8 +131,8 @@ var ArticleEditorManager;
         var ae = this.articleElem;
 
         var title     = articleInfo["title"];
-        var createdOn = articleInfo["created_on"];
-        var updatedOn = articleInfo["updated_on"];
+        var createdOn = new Date( articleInfo["created_on_epoch"] );
+        var updatedOn = new Date( articleInfo["updated_on_epoch"] );
         // update 先 URI?
         var userName  = this.articleInfo["user_name"];
         var articleId = this.articleInfo["article_id"];
@@ -208,7 +174,7 @@ var ArticleEditorManager;
                                  [ [ "className", "article-date-updated_on" ] ] );
             return createElem( "div", [ e1, e2 ], [ [ "className", "article-date" ] ] );
         };
-        e.appendChild( createEArticleDateElem( createdOn, updatedOn ) );
+        e.appendChild( Helper.createArticleDateElem( createdOn, updatedOn ) );
 
         var pe = ae.parentNode;
         ae.appendChild( editableArticleElem );

@@ -8,7 +8,7 @@ var Helper = {};
      *          文字列の場合は自動的に TextNode にされる
      * @param attrs 生成した要素に付加する属性の配列. [ [ attr_name, attr_value ], ... ] の形式
      */
-    Helper.createElem = function createElem( tagname, children, attrs ) {
+    var createElem = Helper.createElem = function createElem( tagname, children, attrs ) {
         var e = document.createElement( tagname );
         if ( ! children ) {
             // do nothig
@@ -37,11 +37,61 @@ var Helper = {};
         return e;
     };
 
+    // 日時
+    var createArticleDateElem = Helper.createArticleDateElem =
+    function createArticleDateElem( created_on, updated_on ) {
+        var strf = function strf( num, minlen ) {
+            var ss = [];
+            var s = "" + num;
+            var i = minlen - s.length;
+            while ( i -- ) ss.push( '0' );
+            ss.push( s );
+            return ss.join( '' );
+        };
+        var strftime = function strftime( time ) {
+            var t = time;
+            return t.getUTCFullYear() + "-" + strf( t.getUTCMonth(), 2 ) + "-"
+                + strf( t.getUTCDate(), 2 ) + " " + strf( t.getUTCHours(), 2 ) + ":"
+                + strf( t.getUTCMinutes(), 2 ) + " (UTC)";
+        };
+        var e = createElem( "div", null, [ [ "className", "article-date" ] ] );
+        e.appendChild( createElem( "div", [ "作成日時 : " + strftime( created_on ) ],
+                    [ [ "className", "article-date-created_on" ] ] ) );
+        e.appendChild( createElem( "div", [ "更新日時 : " + strftime( updated_on ) ],
+                    [ [ "className", "article-date-updated_on" ] ] ) );
+        return e;
+    };
+
+    Helper.createArticleChildNodesFromJson = function createArticleChildNodesFromJson( json ) {
+        var title      = json['title'     ];
+        var created_on = new Date( json['created_on_epoch'] * 1000 );
+        var updated_on = new Date( json['updated_on_epoch'] * 1000 );
+        var uri        = json['uri'       ];
+        var body       = json['body'      ];
+
+        var articleElem = document.createDocumentFragment();
+
+        // タイトル
+        var e  = articleElem.appendChild(
+                createElem( "h1", null , [ [ "className", "article-title" ] ] ) );
+        e.appendChild( createElem( "a" , [ title ],
+                    [ [ "href", uri ], [ "className", "article-uri" ] ]  ) );
+
+        // 本文
+        var createArticleBodyElem = function createArticleBodyElem( bodyText ) {
+            return createElem( "div", convertLf2Br( bodyText ), 
+                    [ [ "className", "article-body" ] ] );
+        };
+        articleElem.appendChild( createArticleBodyElem( body ) );
+        articleElem.appendChild( createArticleDateElem( created_on, updated_on ) );
+        return articleElem;
+    };
+
     /**
      * 文字列の改行を HTMLBRElement に変更する
      * 文字列と br 要素からなる配列を返す.
      */
-    Helper.convertLf2Br = function convertLf2Br( str ) {
+    var convertLf2Br = Helper.convertLf2Br = function convertLf2Br( str ) {
         var i;
         var ee = [];
         var lines = str.split( "\n" );
