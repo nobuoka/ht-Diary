@@ -127,11 +127,8 @@ sub _update_post {
         return;
     }
 
-    # TODO 必要な処理
     $article->param( 'body',  $body  );
     $article->param( 'title', $title );
-    #$r->res->redirect( '/user:' . $user_name . '/article:' . $article_id );
-    #return;
     # とりあえず json のみ
     if ( $r->req->uri->view eq 'json' ) {
         $r->res->content_type( 'text/json' );

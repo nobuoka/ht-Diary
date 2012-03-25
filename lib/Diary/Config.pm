@@ -47,7 +47,7 @@ sub uri_filter {
         if ( my $k = $path_param_name{$b} ) {
             $uri->param( $k, $i );
         } else {
-            # TODO: 不明なパラメータ
+            # 不明なパラメータ; とりあえず何もしない
         }
         $b = $b . '.' . $c if ( defined $c );
         $b = $b . '.' . $e if ( defined $e );

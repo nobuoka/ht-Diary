@@ -33,7 +33,10 @@ sub setup : Test(setup => 3) {
 sub create_assoc_user_hatena : Test( 1 ) {
     my $self = shift;
 
-    ok $self->{'user'}->create_associated_user_hatena( 'hatenaid' );
+    my $user = $self->{'user'};
+    my $user_hatena = $user->create_associated_user_hatena( 'hatenaid' );
+
+    is $user_hatena->user->id, $user->id;
 }
 
 __PACKAGE__->runtests;

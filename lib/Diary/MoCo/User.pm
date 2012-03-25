@@ -99,6 +99,7 @@ sub create_associated_user_hatena {
     my $self = shift;
     my ( $hatena_name ) = @_;
 
+    # とりあえず現状では hatena の user_name と Diary の user_name を同一にする
     my $user_hatena = Diary::MoCo::UserHatena->create(
         name          => $hatena_name,
         assoc_user_id => $self->id,

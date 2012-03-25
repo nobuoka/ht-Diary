@@ -127,10 +127,7 @@ sub _load_config_file {
     # 設定ファイルのコメント行を取り除く
     @lines = grep( !/^#/, @lines );
     $fh->close();
-    # TODO : 行数確認とか
-    #foreach( @lines ) {
-    #    print "::", $_, "\n";
-    #}
+
     $self->{'dsn'}      = $lines[0];
     $self->{'username'} = $lines[1];
     $self->{'password'} = $lines[2];
