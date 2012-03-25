@@ -131,8 +131,8 @@ var ArticleEditorManager;
         var ae = this.articleElem;
 
         var title     = articleInfo["title"];
-        var createdOn = new Date( articleInfo["created_on_epoch"] );
-        var updatedOn = new Date( articleInfo["updated_on_epoch"] );
+        var createdOn = new Date( articleInfo["created_on_epoch"] * 1000 );
+        var updatedOn = new Date( articleInfo["updated_on_epoch"] * 1000 );
         // update 先 URI?
         var userName  = this.articleInfo["user_name"];
         var articleId = this.articleInfo["article_id"];
@@ -167,13 +167,6 @@ var ArticleEditorManager;
         e.appendChild( createEArticleBodyElem( body ) );
 
         // 日時
-        var createEArticleDateElem = function createEArticleDateElem( createdOn, updatedOn ) {
-            var e1 = createElem( "div", [ createdOn ], 
-                                 [ [ "className", "article-date-created_on" ] ] );
-            var e2 = createElem( "div", [ updatedOn ], 
-                                 [ [ "className", "article-date-updated_on" ] ] );
-            return createElem( "div", [ e1, e2 ], [ [ "className", "article-date" ] ] );
-        };
         e.appendChild( Helper.createArticleDateElem( createdOn, updatedOn ) );
 
         var pe = ae.parentNode;
