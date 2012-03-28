@@ -2,7 +2,7 @@
         <h1 class="article-title">
           <a class="article-uri" href="/user:[% user.name | uri | html %]/article:[% article.id | uri | html %]">[% article.title | html %]</a>
         </h1>
-        <div class="article-body">[% r.conv_lf_to_br_tag( r.esc_html( article.body ) ) %]</div>
+        <div class="article-body">[% article.body | html | html_line_break %]</div>
         <div class="article-date">
           <div class="article-date-created_on">作成日時 : [% article.created_on.strftime('%Y-%m-%d %H:%M') | html %] (UTC)</div>
           <div class="article-date-updated_on">更新日時 : [% article.updated_on.strftime('%Y-%m-%d %H:%M') | html %] (UTC)</div>

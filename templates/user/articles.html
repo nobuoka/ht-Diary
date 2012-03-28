@@ -31,11 +31,11 @@
     <script type="text/javascript" src="/js/jquery-1.7.1.js"></script>
     <script type="text/javascript" src="/js/helper.js"></script>
     [%- # ページ番号が指定されている場合は読み込み機能が使われないようにする -%]
+    [%- USE JavaScript -%]
     [%- IF not page_specified -%]
     <script type="text/javascript" src="/js/articles_loader.js"></script>
     <script type="text/javascript">
-      // とりあえず現状エスケープする必要はないが, 将来的に注意が必要
-      ArticlesLoader.conf['user_name'   ] = "[% user.name    %]";
+      ArticlesLoader.conf['user_name'   ] = "[% user.name | js %]";
       ArticlesLoader.conf['num_per_page'] = [% num_per_page %];
       ArticlesLoader.conf['num_pages'   ] = [% num_pages    %];
       ArticlesLoader.conf['cur_page_num'] = [% cur_page     %];
@@ -50,9 +50,11 @@
       jQuery( function onLoad() {
           var manager = new ArticleEditorManager();
           manager.initialize();
-          ArticlesLoader.addEventListenerForLoadArticles( function onLoadArticles() {
-              manager.update();
-          } );
+          if ( ArticlesLoader ) {
+              ArticlesLoader.addEventListenerForLoadArticles( function onLoadArticles() {
+                  manager.update();
+              } );
+          }
       } );
     </script>
     [%- END -%]

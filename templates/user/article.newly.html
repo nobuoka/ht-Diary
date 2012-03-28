@@ -2,10 +2,11 @@
 [%- SET page_title  = '記事の作成'          -%]
 [% WRAPPER 'wrapper.page.html' title = page_title _ ' - ' _ diary_title %]
     <div>
-      <h1><a href="/user:[% user.name | html %]/articles">[% diary_title | html %]</a></h1>
+      <h1><a href="/user:[% user.name | uri | html
+          %]/articles">[% diary_title | html %]</a></h1>
       <article>
         <h1>新規記事作成</h1>
-        <form action="/user:[% user.name | url %]/articles" method="POST">
+        <form action="/user:[% user.name | uri | html %]/articles" method="POST">
           <div>title : <input type="text" name="title"></div>
           <div><textarea name="body"></textarea></div>
           <div><input type="submit" value="記事を作成"></div>

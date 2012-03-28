@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use base qw/Ridge/;
 
+use URI::Encode qw( uri_encode uri_decode );
 use Diary::Database;
 
 __PACKAGE__->configure;
@@ -28,34 +29,26 @@ sub user {
     return $user;
 }
 
-# ------------------
-#  出力用エスケープ
-# ------------------
-
-###
-# XXX Templates のフィルターにする
-# HTML 内にテキストとして出力する文字を, HTML として解釈され内容にエスケープ
-sub esc_html {
-    my $self = shift;
+sub encode_uri_path_param {
     my ( $str ) = @_;
+    # コロンとアットマークとピリオドを @XX 形式に変換する
+    $str =~ s/@/\@40/g;
+    $str =~ s/:/\@3A/g;
+    $str =~ s/\./\@2E/g;
+    # さらに, 使用できない文字をパーセントエンコードする
+    $str = uri_encode( $str, 1 );
 
-    $str =~ s/&/&amp;/g;
-    $str =~ s/</&lt;/g;
-    $str =~ s/>/&gt;/g;
-    $str =~ s/"/&quot;/g;
-    $str =~ s/'/&#39;/g;
-    $str;
+    return $str;
 }
 
-###
-# XXX Templates のフィルターにする
-# 改行を br タグに
-sub conv_lf_to_br_tag {
-    my $self = shift;
+sub decode_uri_path_param {
     my ( $str ) = @_;
+    # パーセントエンコードをデコード
+    $str = uri_decode( $str );
+    # @XX 形式のものを元に戻す
+    $str =~ s/@([a-fA-F0-9]{2})/chr($1)/eg;
 
-    $str =~ s/\n/<br>/g;
-    $str;
+    return $str;
 }
 
 1;

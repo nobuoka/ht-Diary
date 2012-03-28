@@ -25,6 +25,12 @@ __PACKAGE__->setup({
         filter   => \&uri_filter,
     },
 
+    'View::TT' => {
+        FILTERS => {
+            uri_path_param => \&Diary::encode_uri_path_param,
+        },
+    },
+
     ## Application specific configuration
     app_config => {
         default => {
