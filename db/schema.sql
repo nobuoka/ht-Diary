@@ -18,5 +18,7 @@ CREATE TABLE article (
     body    LONGTEXT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT 0,
     updated_on DATETIME NOT NULL DEFAULT 0,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    INDEX article_ui_co_index ( user_id, created_on )
 );
+

@@ -7,6 +7,18 @@ dialy.pl を web アプリケーションにするプロジェクト.
 
 =head1 CONFIGURATION AND ENVIRONMENT
 
+=head2 OAuth CONFIGURATION
+
+本アプリケーションは, ユーザー認証のためにはてな OAuth を使用します. 
+
+=head3 Hatena OAuth CONF FILE
+
+はてな OAuth の認証に用いるための client credentials の設定は, 
+config/oauth_hatena.conf ファイルに記述します. 形式は JSON 形式です. 
+
+config/oauth_hatena.conf.template が雛形ですので, 
+これを参考に記述してください.
+
 =head2 DATABASE CONFIGURATION
 
 本アプリケーションは, MySQL サーバーを使用します. 

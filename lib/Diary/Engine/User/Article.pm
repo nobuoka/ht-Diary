@@ -228,10 +228,17 @@ sub _delete_post {
     my ($self, $r) = @_;
     my $article_id = $r->req->uri->param('article_id');
 
+    # ログインユーザー
+    my $auth_user = $r->user;
+    if ( ! defined $auth_user ) {
+        $r->res->code( '401' );
+        $r->res->content( '401 Unauthorized' );
+        return;
+    }
+
     # パラメータの取得
     my $user_name = $r->req->uri->param('user_name');
     if ( ! defined $user_name ) {
-        # 例外
         $r->res->code( '404' );
         $r->res->content( '404 NOT FOUND' );
         return;
@@ -246,16 +253,24 @@ sub _delete_post {
         return;
     }
 
-    $user->delete_article_by_id( $article_id )
-        or die "failed to delete article (id=$article_id)";
+    # Article オブジェクトの取得; 失敗の場合は 404 エラー
+    my $article = $user->select_article_by_id( $article_id );
+    if ( ! defined $article ) {
+        $r->res->code( '404' );
+        $r->res->content( '404 NOT FOUND' );
+        return;
+    }
+
+    # 削除対象記事作成ユーザーとログインユーザーが同一か
+    if ( $user->id != $auth_user->id ) {
+        $r->res->code( '403' );
+        $r->res->content( '403 FORBIDDEN' );
+        return;
+    }
+
+    $user->delete_article_by_id( $article_id );
     $r->res->redirect( '/user:' . $user_name . '/articles' );
     return;
-    $r->stash->param(
-        user    => $user,
-        #    article => $article,
-    );
-    #$r->res->content_type('text/plain');
-    #$r->res->content('Welcome to the Ridge world!');
 }
 
 1;

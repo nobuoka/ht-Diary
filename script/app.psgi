@@ -16,6 +16,9 @@ use OAuth::Lite::Agent;
 my $namespace = 'Diary';
 $namespace->use or die $@;
 
+use Diary::Database;
+use Diary::OAuthConf;
+
 my $root = file(__FILE__)->parent->parent;
 
 $ENV{GATEWAY_INTERFACE} = 1; ### disable plack's accesslog
@@ -30,6 +33,13 @@ if ( !-f $dbconfpath ) {
 }
 Diary::Database->load_db_config( $dbconfpath );
 
+my $hatenaoauthconfpath = "config/oauth_hatena.conf";
+if ( !-f $dbconfpath ) {
+    die '接続先 DB の設定ファイルが存在しません. ' . "\n"
+                . 'はじめに initdb.pl を使用して接続先 DB の設定を行ってください.' . "\n";
+}
+my ( $hatena_oauth_consumer_key, $hatena_oauth_consumer_secret )
+        = Diary::OAuthConf->read_oauth_config( $hatenaoauthconfpath );
 
 builder {
     unless ($ENV{PLACK_ENV} eq 'production') {
@@ -54,8 +64,8 @@ builder {
     $ua->proxy( 'http', $ENV{$k} ) if $k; 
 
     enable 'Plack::Middleware::HatenaOAuth',
-        consumer_key       => 'vUarxVrr0NHiTg==',
-        consumer_secret    => 'RqbbFaPN2ubYqL/+0F5gKUe7dHc=',
+        consumer_key       => $hatena_oauth_consumer_key,
+        consumer_secret    => $hatena_oauth_consumer_secret,
         login_path         => '/login',
         ua                 => $ua,
         ;

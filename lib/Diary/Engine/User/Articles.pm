@@ -72,6 +72,18 @@ sub _post{
         return;
     }
 
+    # form チェックは query パラメータとリクエストボディのパラメータを区別しない?
+    $r->req->form(
+        # 現在のところチェックすべきことはない? (存在チェックのみ)
+        'title' => [],
+        'body'  => [],
+    );
+    if ( $r->req->form->has_error ) {
+        $r->res->code( '400' );
+        $r->res->content( '400 BAD REQUEST : has_error' );
+        return;
+    }
+
     # パラメータの取得と確認
     my $title = $r->req->param('title');
     my $body  = $r->req->param('body' );
