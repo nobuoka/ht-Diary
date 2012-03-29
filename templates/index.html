@@ -5,7 +5,7 @@
 
       [% IF r.user %]
       <ul>
-        <li><a href="/user:[% r.user.name | uri | html %]/articles">あなたの記事一覧</a></li>
+        <li><a href="/user:[% r.user.name | uri_path_param | html %]/articles">あなたの記事一覧</a></li>
       </ul>
       [% ELSE %]
       <p>まずログインしてください。</p>

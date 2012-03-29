@@ -6,7 +6,7 @@
         [%   IF p == cur_page   %]
         <span class="current-page">[% p | html %]</span>
         [%   ELSE               %]
-        <a href="/user:[% user.name | uri | html
+        <a href="/user:[% user.name | uri_path_param | html
             %]/articles?page=[% p | uri | html %]">[% p | html %]</a>
         [%   END                %]
         [%   p = p + 1          %]

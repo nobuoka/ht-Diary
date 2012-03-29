@@ -31,13 +31,20 @@ sub user {
 
 sub encode_uri_path_param {
     my ( $str ) = @_;
-    # コロンとアットマークとピリオドを @XX 形式に変換する
-    $str =~ s/@/\@40/g;
-    $str =~ s/:/\@3A/g;
-    $str =~ s/\./\@2E/g;
+    # コロンとアットマークとピリオドとスラッシュを @XX 形式に変換する
+    encode_atenc( $str );
     # さらに, 使用できない文字をパーセントエンコードする
     $str = uri_encode( $str, 1 );
 
+    return $str;
+}
+
+sub encode_atenc {
+    my ( $str ) = @_;
+    $str =~ s/@/\@40/g;
+    $str =~ s/:/\@3A/g;
+    $str =~ s/\./\@2E/g;
+    $str =~ s|/|\@2F|g;
     return $str;
 }
 
@@ -46,9 +53,16 @@ sub decode_uri_path_param {
     # パーセントエンコードをデコード
     $str = uri_decode( $str );
     # @XX 形式のものを元に戻す
-    $str =~ s/@([a-fA-F0-9]{2})/chr($1)/eg;
+    decode_atenc( $str );
 
     return $str;
 }
+
+sub decode_atenc {
+    my ( $str ) = @_;
+    $str =~ s/@([a-fA-F0-9]{2})/chr($1)/eg;
+    return $str;
+}
+
 
 1;

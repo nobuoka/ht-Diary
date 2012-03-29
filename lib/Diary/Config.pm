@@ -1,10 +1,13 @@
 package Diary::Config;
 use strict;
 use warnings;
-use Ridge::Config;
-use base qw/Ridge::Config/;
+use utf8;
+use parent qw( Ridge::Config );
+
 use Path::Class qw/file/;
 use URI;
+use URI::Encode qw( uri_encode uri_decode );
+use Diary;
 
 my $root = file(__FILE__)->dir->parent->parent->parent;
 
@@ -66,14 +69,16 @@ sub uri_filter {
 ###
 # path の構成要素 (スラッシュで囲まれた部分) を, 
 # base:id;cmd 形式で認識して ( base, id, cmd, ext ) のリストで返す
-# id 部, cmd 部は, 存在しない場合は undef になる
+# id 部, cmd 部, ext 部は, 存在しない場合は undef になる
 sub _path_component_filter {
     my ( $path_component ) = @_;
     # 空文字列の場合そのまま終了
-    return ( $path_component, undef, undef ) if $path_component eq '';
+    return ( $path_component, undef, undef, undef ) if $path_component eq '';
 
+    # パーセントエンコードのデコード
+    $path_component = uri_decode( $path_component );
     # セミコロン (; - \x3B) で区切られた部分を取り出す
-    my ( $t   , $cmd ) = split /%3B/, $path_component, 2;
+    my ( $t   , $cmd ) = split /;/, $path_component, 2;
     # ピリオド (.) で区切られた部分を取り出す
     my $idx = rindex( $t, '.' );
     my ( $bb, $ext );
@@ -82,8 +87,8 @@ sub _path_component_filter {
         $t   = substr( $t, 0, $idx );
     }
     # コロン (: - \x3A) で区切られた部分を取り出す
-    my ( $base, $id  ) = split /%3A/, $t, 2;
-    return ( $base, $id, $cmd, $ext );
+    my ( $base, $id ) = split /:/, $t, 2;
+    return ( Diary::decode_atenc( $base ), $id, $cmd, $ext );
 }
 
 1;

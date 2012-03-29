@@ -2,7 +2,7 @@
 [%- SET page_title  = article.title         -%]
 [% WRAPPER 'wrapper.page.html' title = page_title _ ' - ' _ diary_title %]
     <div>
-      <h1><a href="/user:[% user.name | uri | html
+      <h1><a href="/user:[% user.name | uri_path_param | html
           %]/articles">[% user.name | html %] の日記</a></h1>
       <article class="article">
 
@@ -15,11 +15,11 @@
         <section>
           <h1>記事の管理</h1>
           <div>
-            <a href="/user:[% user.name | uri | html
-                %]/article:[% article.id | uri | html %];edit">編集する</a>
+            <a href="/user:[% user.name | uri_path_param | html
+                %]/article:[% article.id | uri_path_param | html %];edit">編集する</a>
           </div>
-          <form action="/user:[% user.name | uri | html
-              %]/article:[% article.id | uri | html %];delete" method="POST">
+          <form action="/user:[% user.name | uri_path_param | html
+              %]/article:[% article.id | uri_path_param | html %];delete" method="POST">
             <div><input type="submit" value="記事を削除する"></div>
           </form>
         </section>

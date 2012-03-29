@@ -1,6 +1,6 @@
 [%- # 変数 article と r を用いる -%]
         <h1 class="article-title">
-          <a class="article-uri" href="/user:[% user.name | uri | html %]/article:[% article.id | uri | html %]">[% article.title | html %]</a>
+          <a class="article-uri" href="/user:[% user.name | uri_path_param | html %]/article:[% article.id | uri_path_param | html %]">[% article.title | html %]</a>
         </h1>
         <div class="article-body">[% article.body | html | html_line_break %]</div>
         <div class="article-date">
