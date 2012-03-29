@@ -253,18 +253,18 @@ sub _delete_post {
         return;
     }
 
+    # 削除対象記事作成ユーザーとログインユーザーが同一か
+    if ( $user->id != $auth_user->id ) {
+        $r->res->code( '403' );
+        $r->res->content( '403 FORBIDDEN' );
+        return;
+    }
+
     # Article オブジェクトの取得; 失敗の場合は 404 エラー
     my $article = $user->select_article_by_id( $article_id );
     if ( ! defined $article ) {
         $r->res->code( '404' );
         $r->res->content( '404 NOT FOUND' );
-        return;
-    }
-
-    # 削除対象記事作成ユーザーとログインユーザーが同一か
-    if ( $user->id != $auth_user->id ) {
-        $r->res->code( '403' );
-        $r->res->content( '403 FORBIDDEN' );
         return;
     }
 

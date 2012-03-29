@@ -36,9 +36,9 @@
     <script type="text/javascript" src="/js/articles_loader.js"></script>
     <script type="text/javascript">
       ArticlesLoader.conf['user_name'   ] = "[% user.name | js %]";
-      ArticlesLoader.conf['num_per_page'] = [% num_per_page %];
-      ArticlesLoader.conf['num_pages'   ] = [% num_pages    %];
-      ArticlesLoader.conf['cur_page_num'] = [% cur_page     %];
+      ArticlesLoader.conf['num_per_page'] = parseInt( "[% num_per_page | js %]", 10 );
+      ArticlesLoader.conf['num_pages'   ] = parseInt( "[% num_pages    | js %]", 10 );
+      ArticlesLoader.conf['cur_page_num'] = parseInt( "[% cur_page     | js %]", 10 );
       jQuery( function onLoad() {
           ArticlesLoader.initialize();
       } );

@@ -1,9 +1,9 @@
 package Diary;
 use strict;
 use warnings;
-use base qw/Ridge/;
+use parent qw( Ridge );
 
-use URI::Encode qw( uri_encode uri_decode );
+use URI::Escape qw();
 use Diary::Database;
 
 __PACKAGE__->configure;
@@ -34,7 +34,7 @@ sub encode_uri_path_param {
     # コロンとアットマークとピリオドとスラッシュを @XX 形式に変換する
     encode_atenc( $str );
     # さらに, 使用できない文字をパーセントエンコードする
-    $str = uri_encode( $str, 1 );
+    $str = URI::Escape::uri_escape_utf8( $str );
 
     return $str;
 }
@@ -51,7 +51,8 @@ sub encode_atenc {
 sub decode_uri_path_param {
     my ( $str ) = @_;
     # パーセントエンコードをデコード
-    $str = uri_decode( $str );
+    $str = URI::Escape::uri_unescape( $str );
+    utf8::decode( $str ) or die 'invalid sequence';
     # @XX 形式のものを元に戻す
     decode_atenc( $str );
 

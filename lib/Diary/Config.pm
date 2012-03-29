@@ -6,7 +6,7 @@ use parent qw( Ridge::Config );
 
 use Path::Class qw/file/;
 use URI;
-use URI::Encode qw( uri_encode uri_decode );
+use URI::Escape qw();
 use Diary;
 
 my $root = file(__FILE__)->dir->parent->parent->parent;
@@ -76,7 +76,7 @@ sub _path_component_filter {
     return ( $path_component, undef, undef, undef ) if $path_component eq '';
 
     # パーセントエンコードのデコード
-    $path_component = uri_decode( $path_component );
+    $path_component = URI::Escape::uri_unescape( $path_component );
     # セミコロン (; - \x3B) で区切られた部分を取り出す
     my ( $t   , $cmd ) = split /;/, $path_component, 2;
     # ピリオド (.) で区切られた部分を取り出す
