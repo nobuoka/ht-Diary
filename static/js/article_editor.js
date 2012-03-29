@@ -16,16 +16,6 @@ var ArticleEditorManager;
     // class ArticleEditorManager 
     //============================
 
-    // ArticleEditor のための状態を表す定数
-    /** 通常表示中 */
-    var ST_SHOWING = { name : "show" };
-    /** 編集のための生のテキストデータの要求中 (レスポンス待ち) */
-    var ST_REQUESTING_RAW_TEXT = { name : "request raw text" };
-    /** 編集画面表示中 */
-    var ST_EDITING = { name : "edit" };
-    /** 編集したテキストの送信中 (レスポンス待ち) */
-    var ST_SUBMITTING = { name : "submit" };
-
     /**
      * 各記事毎に生成される記事編集用オブジェクトのコンストラクタ
      */
@@ -35,7 +25,6 @@ var ArticleEditorManager;
         }
 
         this.articleElem    = articleElem;
-        this.currentStatus  = ST_SHOWING;
         this.currentRequest = null;
 
         // user_name と article_id の取得
@@ -251,7 +240,8 @@ var ArticleEditorManager;
         this.showWaitingViewForRawDataRequest();
         // XMLHttpRequest を投げる
         jQuery.ajax({
-            url     : "/api/article.json?user_name=" + userName + "&article_id=" + articleId,
+            url     : "/api/article.json?user_name="  + encodeURIComponent( userName  ) +
+                                       "&article_id=" + encodeURIComponent( articleId ) ,
             context : this,
             success : _el_success_requestEditing,
             error   : _el_fail_requestEditing
@@ -263,7 +253,6 @@ var ArticleEditorManager;
      */
     var _el_success_requestEditing = function _el_success_requestEditing( data, textStat, req ) {
         // 状態遷移
-        this.currentStatus = ST_EDITING;
         this.showEditView( data );
     };
 
@@ -276,7 +265,6 @@ var ArticleEditorManager;
                "  status code   : " + req.status +
                "  response text : " + req.responseText + ")" );
         // 状態遷移
-        this.currentStatus = ST_SHOWING;
         this.loadLastNormalView();
     };
 
@@ -303,7 +291,8 @@ var ArticleEditorManager;
         }
         jQuery.ajax({
             type    : "POST",
-            url     : "/api/article.json;update?user_name=" + userName + "&article_id=" + articleId,
+            url     : "/api/article.json;update?user_name="  + encodeURIComponent( userName  ) +
+                                              "&article_id=" + encodeURIComponent( articleId ),
             data    : params,
             context : this,
             success : _el_success_updating,
@@ -312,13 +301,11 @@ var ArticleEditorManager;
 
         // 状態遷移
         this.saveLastEditView();
-        this.currentState = ST_SUBMITTING;
         this.showWaitingViewForSubmit(); 
     }
 
     var _el_success_updating = function _el_success_updating( data, textStat, req ) {
         // 状態遷移
-        this.currentState = ST_SHOWING;
         this.showNormalView( data );
     };
 
@@ -327,7 +314,6 @@ var ArticleEditorManager;
                "  " + req.responseText );
 
         // 状態遷移
-        this.currentState = ST_EDITING;
         this.loadLastEditView();
     };
 

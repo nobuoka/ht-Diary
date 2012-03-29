@@ -74,7 +74,7 @@ var ArticlesLoader = {
     ArticlesLoader.removeEventListenerForLoadArticles =
     function removeEventListenerForLoadArticles( el ) {
         var ls = this._listenersForLoadArticles;
-        return ( _removeCallbackFunc( ls, callback ) !== null );
+        return ( _removeCallbackFunc( ls, el ) !== null );
     };
 
     /**
@@ -89,9 +89,10 @@ var ArticlesLoader = {
         var numPerPage   = ArticlesLoader.conf['num_per_page'];
 
         // リクエスト先 URI
-        var apiUri = "/api/articles.json?" + "user_name="     + encdUserName +
-                                              "&page="         + page         +
-                                              "&num_per_page=" + numPerPage   ;
+        var apiUri = "/api/articles.json?" +
+                     "user_name="     + encodeURIComponent( encdUserName ) +
+                     "&page="         + encodeURIComponent( page         ) +
+                     "&num_per_page=" + encodeURIComponent( numPerPage   ) ;
         // XMLHttpRequest を投げる
         jQuery.ajax({
             url     : apiUri,
